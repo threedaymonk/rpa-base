@@ -464,7 +464,9 @@ EOF
             puts "Will remove: "
             to_be_removed.each {|x| puts " * #{x}" }
         end
-        to_be_removed.each {|x| uninstall x}
+        # recheck with installed? cause it could have been removed when
+        # removing some other port in the list (revdep)
+        to_be_removed.each {|x| uninstall x if installed? x }
     ensure
         release_lock
     end

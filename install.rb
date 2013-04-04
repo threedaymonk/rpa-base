@@ -81,7 +81,7 @@ require 'rpa/install'
 require 'rbconfig'
 class Install_rpa_base < RPA::Install::Application
     name "rpa-base"
-    version "0.2.0-28"
+    version "0.2.1-1"
     classification Application.Admin
     build do
         skip_default Installrdoc

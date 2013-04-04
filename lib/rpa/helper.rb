@@ -471,7 +471,7 @@ class Installmodules < InstallStuffBase
     def run(installer)
         super
         sitelibdir = ::Config::CONFIG["sitelibdir"]
-        sitelibdir.gsub!(/^#{Regexp.escape @config["prefix"]}/, "")
+        sitelibdir.gsub!(/^#{Regexp.escape(::Config::CONFIG["prefix"])}/, "")
         do_copy(installer, sitelibdir)
     end
     
@@ -625,33 +625,42 @@ class RunUnitTests < HelperBase
         reldir = Installtests.default_base_destdir(@config, installer)
         dir = File.join(@config["prefix"], reldir)
         return unless File.dir? dir
-        puts "Running unit tests for #{@meta["name"]}." if @config["verbose"] >= 2
-        Dir.chdir(dir) do 
-            if @meta["test_suite"]
-                begin
-                    oldverbose = $VERBOSE
-                    $VERBOSE = nil
-                    #FIXME: kludge
-                    suite = @meta["test_suite"]
-                    if File.exist? suite
-                        run_testfile(suite)
-                    else
-                        run_testfile(File.basename(suite))
-                    end
-                ensure
-                    $VERBOSE = oldverbose
-                end
-            else
-                Dir["*.rb"].sort.each do |fname|
+        tmpdir = RPA.mktemp "test_#{@meta["name"]}", false
+        begin
+            if @config["verbose"] >= 2
+                puts "Preparing unit tests for #{@meta["name"]} (fixture isolation)." 
+            end
+            @fileops.cp_r dir, tmpdir
+            puts "Running unit tests for #{@meta["name"]}." if @config["verbose"] >= 2
+            Dir.chdir(tmpdir) do 
+                if @meta["test_suite"]
                     begin
                         oldverbose = $VERBOSE
                         $VERBOSE = nil
-                        run_testfile(fname)
+                        #FIXME: kludge
+                        suite = @meta["test_suite"]
+                        if File.exist? suite
+                            run_testfile(suite)
+                        else
+                            run_testfile(File.basename(suite))
+                        end
                     ensure
                         $VERBOSE = oldverbose
                     end
+                else
+                    Dir["*.rb"].sort.each do |fname|
+                        begin
+                            oldverbose = $VERBOSE
+                            $VERBOSE = nil
+                            run_testfile(fname)
+                        ensure
+                            $VERBOSE = oldverbose
+                        end
+                    end
                 end
             end
+        rescue
+            @fileops.rm_rf tmpdir rescue nil
         end
     end
     

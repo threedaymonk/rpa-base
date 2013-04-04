@@ -1,3 +1,33 @@
+2004-8-22 21:40 (+0200)  batsman  rev 766
+
+ * install.rb, lib/rpa/helper.rb:
+    Helper::Installmodules#run: don't bomb if the PREFIX is not the one used
+    by ruby.
+
+2004-8-15 13:19 (+0200)  batsman  rev 729
+
+ * lib/rpa/base.rb:
+    LocalInstallation#gc_unneeded_ports: don't bomb when one of the pkgs to be
+    GCed was just removed cause it was a revdep. of another pkg which has just
+    been collected.
+
+2004-8-15 13:14 (+0200)  batsman  rev 728
+
+ * install.rb, lib/rpa/helper.rb, lib/rpa/util.rb:
+    Helper::RunUnitTests#run: isolate the unit tests by copying them into a
+    tempdir.
+    RPA.mktemp:: obvious bugfix.
+
+2004-8-15 11:37 (+0200)  batsman  rev 724
+
+ * lib/rpa/util.rb:
+    Implemented RPA.mktemp.
+
+2004-8-13 19:35 (+0200)  batsman  rev 716
+
+ * install.rb, lib/rpa/repositoryinfo.rb:
+    RepositoryInfo#initialize: don't screw up when the 'available' file is empty.
+
 2004-8-11 17:1 (+0200)  batsman  rev 701
 
  * install.rb:

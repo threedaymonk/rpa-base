@@ -76,4 +76,17 @@ def self.fetch_file(config, src, &block)
     ret
 end
 
+def self.mktemp(prefix, mkdir = true)
+    prefix = prefix.gsub %r{/}, "_"
+    destdir = nil
+    loop do
+        destdir = File.join(RPA::TEMP_DIR, 
+                            "#{prefix}_#{Process.pid}_#{Time.now.to_i}_#{rand(1000000)}")
+        #FIXME: naive, should do locking
+        break if !File.exist? destdir
+    end
+    FileUtils.mkdir_p destdir if mkdir
+    destdir
+end
+
 end # RPA namespace

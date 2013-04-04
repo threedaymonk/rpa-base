@@ -35,7 +35,8 @@ class RepositoryInfo
         unless File.dir?(File.dirname(@cachefile))
             @fileops.mkdir_p(File.dirname(@cachefile), :mode => 0755)
         end
-        cachedinfo = YAML.load(File.read_b(@cachefile)) rescue []
+        cachedinfo = YAML.load(File.read_b(@cachefile)) rescue nil
+        cachedinfo ||= []
         @ports = cachedinfo.map{|x| Port.new(x["metadata"], x["url"], @config) }
     end
 
