@@ -552,7 +552,7 @@ class RepositoryInfo
         @sources << url
     end
 
-    require 'open-uri'
+    require 'rpa/open-uri'
     # Get port info from the registered sources.
     # The information is cached between different runs of the RPA tools.
     def update
@@ -743,7 +743,7 @@ class Port
         @fileops = FileOperations.new
     end
 
-    require 'open-uri'
+    require 'rpa/open-uri'
     # Download the .rps to the specified directory.
     def download(tmpdir = RPA::TEMP_DIR)
         verbose = @config["verbose"]
@@ -755,28 +755,24 @@ class Port
         @fileops.rm_rf(dest) if File.dir? dest
         @fileops.mkdir_p(tmpdir) rescue nil
         #TODO: version comparison (?)
-        if BROKEN_WINDOWS && @url =~ %r{http://}
-            fetch_win(@url, dest)
-        else
-            File.open(dest, "wb") do |f|
-                puts "Getting port #{name} from #{@url}." if verbose >= 2
-                src = @url.gsub(%r{\Afile://}, "")
-                len = 0
-                display_progress = lambda do |rec|
-                    done = 40 * rec / len
-                    bar = "" + "=" * done + " " * (40 - done)
-                    txt = "%03d%% [%s] #{len} bytes\r" % [100 * rec / len, bar]
-                    print txt
-                end
-                if verbose >= 2
-                    open(src, :content_length_proc => lambda{|len| }, 
-                         :progress_proc => display_progress) do |is|
-                             f.write(is.read(4096)) until is.eof?
-                    end
-                    puts
-                else
-                    open(src) { |is| f.write(is.read(4096)) until is.eof? }
-                end
+        File.open(dest, "wb") do |f|
+            puts "Getting port #{name} from #{@url}." if verbose >= 2
+            src = @url.gsub(%r{\Afile://}, "")
+            len = 0
+            display_progress = lambda do |rec|
+                done = 40 * rec / len
+                bar = "" + "=" * done + " " * (40 - done)
+                txt = "%03d%% [%s] #{len} bytes\r" % [100 * rec / len, bar]
+                print txt
+            end
+            if verbose >= 2
+                open(src, :content_length_proc => lambda{|len| }, 
+                     :progress_proc => display_progress) do |is|
+                         f.write(is.read(4096)) until is.eof?
+                     end
+                puts
+            else
+                open(src) { |is| f.write(is.read(4096)) until is.eof? }
             end
         end
         extract dest, destdir
@@ -785,22 +781,6 @@ class Port
     end
 
     private
-    require 'net/http'
-    require 'uri'
-    def fetch_win(src, dest, limit = 10)
-        raise ArgumentError, 'http redirect too deep' if limit == 0
-
-        puts "Getting #{src}." if @config["verbose"] >= 2
-        response = Net::HTTP.get_response(URI.parse(src))
-        case response
-        when Net::HTTPSuccess     
-            File.open(dest, "wb") {|f| f.write response.body }
-        when Net::HTTPRedirection then fetch_win(response['location'], dest, limit-1)
-        else
-            response.error!
-        end
-    end
-    
     def extract(pkg, destdir)
         Package.open(pkg) do |port|
             port.each { |entry| port.extract_entry(destdir, entry) }

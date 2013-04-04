@@ -7,6 +7,7 @@ require 'ftools'
 
 include Config
 
+$stdout.sync = true
 $ruby = CONFIG['ruby_install_name']
 
 ##
@@ -114,6 +115,7 @@ File.open(File.join($sitedir, "rpa/defaults.rb"), "w") do |f|
     f.puts <<EOF
 
 module RPA
+    RPABASE_VERSION = #{RPA::RPABASE_VERSION.inspect}
     VERSION = #{RPA::VERSION.inspect}
     module Defaults
         PREFIX = #{defaults["prefix"].inspect}

@@ -451,7 +451,7 @@ class Installmodules < InstallStuffBase
     def run(installer)
         super
         sitelibdir = ::Config::CONFIG["sitelibdir"]
-        sitelibdir.gsub!(/^#{::Config::CONFIG["prefix"]}/, "")
+        sitelibdir.gsub!(/^#{Regexp.escape @config["prefix"]}/, "")
         do_copy(installer, sitelibdir)
     end
     
@@ -510,9 +510,13 @@ class Installrdoc < HelperBase
         # RDoc shows a lot of crap when an exception is raised
         begin
             if IS_BROKEN_WINDOWS
-                raise "rdoc failed" unless system(ruby, rdoc_path, *args)
+                unless system(ruby, rdoc_path, *args)
+                    puts "WARNING: RI datafile generation failed" if @config["verbose"] >= 2
+                end
             else
-                raise "rdoc failed" unless system(rdoc_path, *args)
+                unless system(rdoc_path, *args)
+                    puts "WARNING: RI datafile generation failed" if @config["verbose"] >= 2
+                end
             end
             #rdoc.document(args)
         ensure
@@ -530,9 +534,13 @@ class Installrdoc < HelperBase
         # RDoc shows a lot of crap when an exception is raised
         begin
             if IS_BROKEN_WINDOWS
-                raise "rdoc failed" unless system(ruby, rdoc_path, *args)
+                unless system(ruby, rdoc_path, *args)
+                    puts "WARNING: RDoc datafile generation failed" if @config["verbose"] >= 2
+                end
             else
-                raise "rdoc failed" unless system(rdoc_path, *args)
+                unless system(rdoc_path, *args)
+                    puts "WARNING: RDoc datafile generation failed" if @config["verbose"] >= 2
+                end
             end
             #rdoc.document(args)
         ensure

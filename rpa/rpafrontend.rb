@@ -72,7 +72,7 @@ class RPAFrontend < Frontend
             opts.on("-s", "--simple", "Simple port display") do
                 options.simple = true
             end
-            opts.on("--verbose LEVEL", "Verbosity level (1)") do |o|
+            opts.on("--verbose LEVEL", "Verbosity level (4)") do |o|
                 config_args << "--verbose" 
                 config_args << o
             end
@@ -80,7 +80,7 @@ class RPAFrontend < Frontend
                 config_args << "--debug" 
             end
             opts.on("-v", "--version", "Version info") do |o|
-                puts "rpa (rpa-base) #{RPA::VERSION}"
+                puts "rpa (rpa-base #{RPA::RPABASE_VERSION}) RPA #{RPA::VERSION}"
             end
 
             opts.separator "Query/info commands:"
