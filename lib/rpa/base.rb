@@ -15,7 +15,7 @@ require 'rbconfig'
 tmpbase = ENV['TMP']||ENV['TEMP']||ENV['TMPDIR']
 
 case ::Config::CONFIG["arch"]
-when /dos|win32/i
+when /dos|win32|mingw/i
     unless tmpbase
         FileUtils.mkdir_p 'c:/temp'
         tmpbase = 'c:/temp'
@@ -25,6 +25,7 @@ else
 end
 
 TEMP_DIR = File.join(tmpbase, "RPA_%10.6f" % Time.now())
+FileUtils.mkdir_p TEMP_DIR
 PWD = Dir.pwd
 
 DEFAULT_TEMP = "tmp"
@@ -254,7 +255,7 @@ class LocalInstallation
 
         destdir = port.download
         begin
-            Dir.chdir(destdir){ load "install.rb" }
+            Dir.chdir(destdir){ load File.expand_path("install.rb") }
         rescue Exception
             RPA::Install::AtExitHandler.cancel
             raise
@@ -337,8 +338,15 @@ class LocalInstallation
     # install from the given port, i.e. build the .rpa and install it
     def install_from_port(filename)
         #FIXME: maybe write build_from_port and use that?
-        destdir = File.join(RPA::TEMP_DIR, "#{filename}_i_f_p_#{rand(100000)}")
-        Package.open(filename) do |port|
+        tmpname = filename.split(/\//).last || ""
+        destdir = File.join(RPA::TEMP_DIR, "#{tmpname}_i_f_p_#{Time.now.to_i}_#{rand(100000)}")
+        destfile = destdir + ".rps"
+        RPA.fetch_file @config, filename do |is|
+            File.open(destfile, "wb") do |os|
+                os.write(is.read(4096)) until is.eof?
+            end
+        end
+        Package.open(destfile) do |port|
             port.each { |entry| port.extract_entry(destdir, entry) }
         end
         begin

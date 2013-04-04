@@ -4,7 +4,7 @@
 # and cleaner normally.
 
 $:.delete "."
-
+$stdout.sync = true
 $get_defaults = false
 $rpa_defaults_text = nil
 begin
@@ -81,7 +81,7 @@ require 'rpa/install'
 require 'rbconfig'
 class Install_rpa_base < RPA::Install::Application
     name "rpa-base"
-    version "0.2.0-21"
+    version "0.2.0-28"
     classification Application.Admin
     build do
         skip_default Installrdoc

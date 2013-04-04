@@ -1,3 +1,61 @@
+2004-8-11 17:1 (+0200)  batsman  rev 701
+
+ * install.rb:
+    Bumped revnum.
+
+2004-8-11 16:54 (+0200)  batsman  rev 700
+
+ * lib/rpa/port.rb, lib/rpa/helper.rb, lib/rpa/base.rb, lib/rpa/transaction.rb:
+    Match mingw in the checks to know if we're on win32.
+
+2004-8-10 21:47 (+0200)  batsman  rev 699
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    Trivial changes in RPAFrontend (info/query interface).
+    Now rpa query/info search the descriptions too.
+
+2004-8-10 19:12 (+0200)  batsman  rev 698
+
+ * install.rb:
+    Bumped revision num.
+
+2004-8-10 18:52 (+0200)  batsman  rev 697
+
+ * lib/rpa/port.rb, lib/rpa/util.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb,
+  lib/rpa/config.rb, lib/rpa/repositoryinfo.rb:
+    Created RPA.fetch_file, which opens local/remote files with verbose info if
+    asked for. It is now used every time some file needs be opened to get
+    information which might be potentially remote.
+    Reworked the configuration system a bit.
+    Now --[no-]-proxy is accepted both as an argument to rpa and to install.rb.
+
+2004-8-10 17:13 (+0200)  batsman  rev 696
+
+ * install.rb, lib/rpa/repositoryinfo.rb:
+    RepositoryInfo#update: handle file:/// gracefully.
+
+2004-8-10 16:54 (+0200)  batsman  rev 695
+
+ * install.rb:
+    Set $stdout.sync for some win32 Ruby distros.
+
+2004-8-10 13:28 (+0200)  batsman  rev 694
+
+ * install.rb, lib/rpa/base.rb:
+    LocalInstallation#build:  use File.expand_path when loading the install.rb 
+    ([ruby-talk:108763]).
+
+2004-8-10 0:8 (+0200)  batsman  rev 690
+
+ * install.rb, lib/rpa/base.rb:
+    LocalInstallation#install_from_port: don't take the filename directly for the
+    tempdir.
+
+2004-8-7 15:2 (+0200)  batsman  rev 668
+
+ * install.rb, lib/rpa/repositoryinfo.rb:
+    RepositoryInfo#update: show download status.
+
 2004-8-5 14:31 (+0200)  batsman  rev 655
 
  * install.rb, lib/rpa/base.rb:

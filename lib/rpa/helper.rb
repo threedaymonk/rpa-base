@@ -415,7 +415,7 @@ class Installexecutables < InstallStuffBase
        "bin"
     end
     require 'rbconfig'
-    if ::Config::CONFIG["arch"] =~ /dos|win32/i
+    if ::Config::CONFIG["arch"] =~ /dos|win32|mingw/i
         def install_file(fname, destdir)
             @fileops.mkdir_p "rpa/#{@dest}/#{destdir}"
             @fileops.install("#{fname}", 
@@ -487,7 +487,7 @@ class Installrdoc < HelperBase
     require 'rdoc/rdoc'
     require 'stringio'
     require 'rbconfig'
-    IS_BROKEN_WINDOWS = ::Config::CONFIG["arch"] =~ /msdos|win32/i
+    IS_BROKEN_WINDOWS = ::Config::CONFIG["arch"] =~ /msdos|win32|mingw/i
     
     def initialize(args = nil, logger = nil)
         args = ["lib"] if args == nil || args == []

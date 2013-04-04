@@ -42,4 +42,38 @@ class FileOperations
     end
 end
 
+def self.fetch_file(config, src, &block)
+    len = 0
+    display_progress = lambda do |rec|
+        done = 40 * rec / len
+        bar = "" + "=" * done + " " * (40 - done)
+        txt = "%03d%% [%s] #{len} bytes\r" % [100 * rec / len, bar]
+        print txt
+    end
+    if %r{\Afile://}.match(src) || !%r{\A[a-z]+://}.match(src) 
+        args = []
+        src = src.gsub(%r{\Afile://}, "")
+    else # remote
+        if config["verbose"] >= 2
+            args = [:content_length_proc => lambda{|len|},
+                    :progress_proc => display_progress]
+        else
+            args = [{}]
+        end
+        if config["proxy"]
+            args[-1][:proxy] = config["proxy"] 
+        else
+            args[-1][:proxy] = nil
+        end
+    end
+    ret = nil
+    open(src, "rb", *args) do |is|
+        ret = yield is
+        if !args.empty? and config["verbose"] >= 2
+            puts
+        end
+    end
+    ret
+end
+
 end # RPA namespace

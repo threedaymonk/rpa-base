@@ -5,6 +5,8 @@
 
 module RPA
 
+require 'rpa/util'
+
 # Represents the information on available packages.
 class RepositoryInfo
     DEFAULT_SRC = ["http://rpa-base.rubyforge.org/ports/ports.info"]
@@ -54,10 +56,10 @@ class RepositoryInfo
         @sources.each do |src|
             puts "Getting port info from #{src}." if verbose >= 2
             begin
-            # FIXME: not all at once in mem
-                src = src.gsub(%r{\Afile://}, "")
-                open(src) {|is| newinfo = newinfo + YAML.load(is.read)} 
-            # FIXME: what about repeated ports, etc?
+                RPA.fetch_file(@config, src) do |is|
+                     newinfo = newinfo + YAML.load(is.read)
+                end
+                # FIXME: what about repeated ports, etc?
             rescue Exception => e
                 p e
                 puts "Couldn't retrieve port info from #{src}." if verbose >= 2

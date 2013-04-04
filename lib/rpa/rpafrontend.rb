@@ -18,7 +18,7 @@ class RPAFrontend < Frontend
         ['dist-upgrade', '', 'Upgrades all ports'],
         ['build', '[port]...', 'Builds the given ports'],
         ['source', '[port]...', 'Download the specified ports'],
-        ['query', '[port]...', 'Query the repository'],
+        ['query|search', '[port]...', 'Query the repository'],
         ['list', '', 'List currently installed ports'],
         ['info', '[port]...', 'Gives info on installed ports'],
         ['update', '', 'Update repository data'],
@@ -36,8 +36,7 @@ class RPAFrontend < Frontend
 
     def parse(args=ARGV)
         options = OpenStruct.new
-        options.name = nil
-        options.description = nil
+        options.searchstr = nil
         options.extended = false
         options.requires = []
         options.classification = []
@@ -64,6 +63,15 @@ class RPAFrontend < Frontend
             opts.on("-h", "--help", "Display usage") do
                 puts opts
                 exit 0
+            end
+
+            opts.on("--[no-]proxy [PROXY]", "HTTP proxy to use") do |o|
+                if o
+                    config_args << "--proxy"
+                    config_args << o
+                else
+                    config_args << "--no-proxy"
+                end
             end
 
             opts.on("-q", "--quiet", "Only output errors") do 
@@ -101,14 +109,6 @@ class RPAFrontend < Frontend
 
 
             opts.separator "Query/info commands:"
-
-            opts.on("-n", "--name NAME", "Port name") do |name|
-                options.name = name
-            end
-
-            opts.on("-d", "--description DESC", "Port description") do |desc|
-                options.description = desc
-            end
 
             opts.on("-r", "--requires PORT[, ...]", Array, "Port dependency") do |req|
                 options.requires = req
@@ -209,11 +209,11 @@ class RPAFrontend < Frontend
 
             @localinst = LocalInstallation.instance @config
             remove(cmd)
-        when 'query'
+        when 'query', 'search'
             cmd.shift
 
             unless cmd.empty?
-                @options.name ||= cmd[0]
+                @options.searchstr ||= cmd[0]
             end
 
             ports = @repository.ports.map{|p| p.metadata.clone.update({"url" => p.url}) }
@@ -234,7 +234,7 @@ class RPAFrontend < Frontend
             cmd.shift
 
             unless cmd.empty?
-                @options.name ||= cmd[0]
+                @options.searchstr ||= cmd[0]
             end
 
             @localinst = LocalInstallation.instance @config
@@ -266,7 +266,7 @@ class RPAFrontend < Frontend
         when 'rollback'
             @localinst = LocalInstallation.instance @config
             rollback(cmd)
-        when 'help'
+        when 'help', 'usage'
             puts "Command Help:"
             puts ""
             command_output do |c|
@@ -407,11 +407,11 @@ class RPAFrontend < Frontend
     def select_port_info(ports)
         matches = ports
 
-        if @options.name
-            matches = matches.select { |p| p['name'] =~ /#{@options.name}/ }
-        end
-        if @options.description
-            matches = matches.select { |p| p['description'] =~ /#{@options.description}/ }
+        if @options.searchstr
+            matches = matches.select do |p| 
+                p['name'] =~ /#{@options.searchstr}/ or
+                p['description'] =~  /#{@options.searchstr}/
+            end
         end
 
         unless @options.requires.empty?

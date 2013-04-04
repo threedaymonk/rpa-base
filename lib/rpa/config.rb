@@ -24,7 +24,7 @@ class Config
         attr_reader :parameters
 
         def def_param(name, desc, parameter = nil, 
-                      exported_name = "--with-#{name}", parentname = nil, &block)
+                      exported_name = name, parentname = nil, &block)
             RPA::Config::VALUES << name
             param = OpenStruct.new
             param.name = name
@@ -47,40 +47,50 @@ class Config
         RPA::Defaults::PREFIX
     end
 
-    def_param("make-prog", "Make executable", "PROG") { "make" }
-    def_param("ruby-prog", "Ruby executable", "PROG") do
+    def_param("make-prog", "Make executable", "PROG", "make-prog") { "make" }
+    def_param("ruby-prog", "Ruby executable", "PROG", "ruby-prog") do
         File.join(::Config::CONFIG["bindir"], 
                   ::Config::CONFIG["ruby_install_name"])
     end
-    def_param("rpa-base", "Metadata directory", "PATH") do
+    def_param("rpa-base", "Metadata directory", "PATH", "rpa-base") do
         RPA::Defaults::RPA_BASE
     end
     def_param("sitelibdir", 
               "Path for Ruby modules relative to $prefix",
-              "PATH", "--with-sitelibdir", "rpa-base") do |rpabase|
+              "PATH", "sitelibdir", "rpa-base") do |rpabase|
         RPA::Defaults::SITELIBDIR
     end
     def_param("so-dir",
               "Path for Ruby extensions relative to $prefix", 
-              "PATH", "--with-so-dir", "sitelibdir") do |sitelibdir|
+              "PATH", "so-dir", "sitelibdir") do |sitelibdir|
                   RPA::Defaults::SO_DIR
               end
     def_param("configfile",
              "Path to a file containing the configuration options", 
-              "PATH", "--with-configfile") do "<none>" end
-    def_param("verbose", "Verbosity level", "LEVEL", "--verbose") { 4 }
-    def_param("debug", "Debug mode", nil, "--debug") { false }
+              "PATH", "configfile") do "<none>" end
+    def_param("verbose", "Verbosity level", "LEVEL", "verbose") { 4 }
+    def_param("debug", "Debug mode", nil, "debug") { false }
     def_param("force", "Force installation despite file conflicts", nil,
-              "--force") { false }
+              "force") { false }
     def_param("build", "Only buils the .rpa packages.", nil,
-              "--build") { false }
+              "build") { false }
     def_param("parallelize", "Parallelize operations.", nil,
-              "--parallelize") { false }
+              "parallelize") { false }
     def_param("no-tests", "Skip unit tests on install.", nil,
-              "--no-tests") { true }
+              "no-tests") { true }
+    def_param("proxy", "HTTP proxy to use", "[PROXY]", "[no-]proxy") do
+        v = ENV["http_proxy"] 
+        if v && v != ""
+            v
+        else
+            false 
+        end
+    end
+          
 
     def self.new(argv)
         options = parse(argv)
+        # FIXME: should refactor these bits?
         options["verbose"] = options["verbose"].to_i
         super options
     end
@@ -94,13 +104,13 @@ class Config
             opts.separator "Local installation options:"
             params.each do |param|
                 if param.param
-                    opts.on("--#{param.name} #{param.param}",
+                    opts.on("--#{param.exported_name} #{param.param}",
                             "#{param.desc}", "#{param.value}") do |o|
                                 param.value = o
                                 param.done = true
                             end
                 else
-                    opts.on("--#{param.name}", "#{param.desc}") do |o|
+                    opts.on("--#{param.exported_name}", "#{param.desc}") do |o|
                         param.value = o
                         param.done = true
                     end
