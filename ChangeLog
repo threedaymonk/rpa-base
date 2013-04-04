@@ -1,3 +1,50 @@
+2004-9-29 10:40 (+0200)  batsman  rev 884
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFronted#update: display all added/updated packages since the last 'rpa update'
+    (not only 14 days).
+
+2004-9-28 18:46 (+0200)  batsman  rev 881
+
+ * install.rb:
+    Rebranded as 0.2.2-1.
+
+2004-9-27 23:45 (+0200)  batsman  rev 879
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    Made rpa query and rpa info case-insensitive when given a simple string.
+
+2004-9-7 11:13 (+0200)  batsman  rev 834
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    RPAFrontend#update: if a new version of rpa-base is available, install right
+    away when doing  rpa update.
+
+2004-9-6 17:18 (+0200)  batsman  rev 828
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    Clarified the message output on  rpa update.
+
+2004-9-5 20:40 (+0200)  batsman  rev 817
+
+ * install.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb,
+  lib/rpa/repositoryinfo.rb:
+    Added a 'date' field to the metadata, which is used to present information on
+    new/updated ports when doing a rpa update.
+
+2004-8-29 14:58 (+0200)  batsman  rev 797
+
+ * install.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Don't bomb when a package not available in the repos. is installed locally
+    on rpa dist-upgrade.
+
+2004-8-27 11:1 (+0200)  batsman  rev 794
+
+ * install.rb, lib/rpa/package.rb:
+    Package::TarInput#extract_entry: set the permissions for newly created
+    dirs explicitly (somehow the :mode => ... parameter to FileUtils.mkdir_p
+    is ignored sometimes).
+
 2004-8-26 14:16 (+0200)  batsman  rev 791
 
  * lib/rpa/helper.rb:

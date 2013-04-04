@@ -504,6 +504,9 @@ class TarInput
                 end
             else
                 @fileops.mkdir_p(dest, :mode => entry.mode)
+                #FIXME: redundant but somehow needed sometimes for
+                #       ruby 2004-08-26 (didn't happen with 2004-07-30)
+                @fileops.chmod entry.mode, dest
             end
             fsync_dir dest 
             fsync_dir File.join(dest, "..")

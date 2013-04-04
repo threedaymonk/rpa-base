@@ -66,7 +66,7 @@ else # $rpa_base_get_defaults
     puts "Recovering defaults..."
     $rpa_defaults_text = <<EOF
 module RPA
-    RPABASE_VERSION = "0.2.0"
+    RPABASE_VERSION = "0.2.2"
     VERSION = "0.0"
     module Defaults
         PREFIX = #{RPA::Defaults::PREFIX.inspect}
@@ -82,7 +82,7 @@ require 'rpa/install'
 require 'rbconfig'
 class Install_rpa_base < RPA::Install::Application
     name "rpa-base"
-    version "0.2.1-4"
+    version "0.2.2-1"
     classification Application.Admin
     build do
         skip_default Installrdoc

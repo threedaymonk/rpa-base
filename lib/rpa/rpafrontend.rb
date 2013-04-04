@@ -315,6 +315,7 @@ class RPAFrontend < Frontend
         warn_if_no_port_info
         puts "Installing ports" unless @options.quiet
 
+        @localinst ||= LocalInstallation.instance @config, false
         previous_ports = @localinst.installed_ports
         begin
             cmd.each do |port| 
@@ -353,8 +354,13 @@ class RPAFrontend < Frontend
             # we must make sure we're in a clean state cause it was not done
             # when initialing the LocalInstallation
             @localinst.apply_pending_rollbacks
+            availports = @localinst.repository_info.ports
             previous_ports.sort.each do |port| 
                 next unless @localinst.retrieve_metadata(port)["wanted"]
+                unless availports.find{|x| x.metadata["name"] == port}
+                    puts "WARNING: skipping #{port}" unless @options.quiet
+                    next
+                end
                 @localinst.install port
                 @localinst.commit
             end
@@ -409,8 +415,8 @@ class RPAFrontend < Frontend
 
         if @options.searchstr
             matches = matches.select do |p| 
-                p['name'] =~ /#{@options.searchstr}/ or
-                p['description'] =~  /#{@options.searchstr}/
+                p['name'] =~ /#{@options.searchstr}/i or
+                p['description'] =~  /#{@options.searchstr}/i
             end
         end
 
@@ -475,7 +481,40 @@ class RPAFrontend < Frontend
     end
 
     def update(cmd)
-        @repository.update
+        require 'time'
+        days = 3653 # 10 years :P
+        since = Time.new - 24*3600*days
+        newports, modports = @repository.update(since)
+        puts
+        unless @options.quiet
+            if newports.size > 0
+                plen = newports.inject(0){|s,x| (l=x["name"].size)>s ? l : s} 
+                vlen = newports.inject(0){|s,x| (l=x["version"].size)>s ? l : s} 
+                puts "Ports added since the last 'rpa update'" # (in the last #{days} days):"
+                newports.each do |p|
+                    desc = p["description"].split(/\n/).first.chomp
+                    puts(" %#{plen}s  %#{vlen}s   #{desc}" % 
+                         [p["name"], p["version"]])
+                end
+                puts
+            end
+            if modports.size > 0
+                plen = modports.inject(0){|s,x| (l=x[0]["name"].size)>s ? l: s} 
+                puts "Ports updated since the last 'rpa update'" # (in the last #{days} days):" 
+                modports.each do |p|
+                    desc = p[1]["description"].split(/\n/).first.chomp
+                    puts(" %#{plen}s  #{p[0]["version"]} -> #{p[1]["version"]}" %
+                           p[1]["name"])
+                end
+                puts
+            end
+        end
+        if modports.any?{|x| x[1]["name"] == "rpa-base"}
+            puts
+            puts " ** New version of rpa-base available, will install it. ** "
+            puts
+            install "rpa-base"
+        end
     end
 
     def check(cmd)

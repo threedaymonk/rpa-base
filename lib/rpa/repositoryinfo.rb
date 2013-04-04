@@ -6,6 +6,7 @@
 module RPA
 
 require 'rpa/util'
+require 'time'
 
 # Represents the information on available packages.
 class RepositoryInfo
@@ -48,7 +49,7 @@ class RepositoryInfo
     require 'rpa/open-uri'
     # Get port info from the registered sources.
     # The information is cached between different runs of the RPA tools.
-    def update
+    def update(notify_since = Time.new - 3600*24*20)
         localinst = LocalInstallation.instance @config
         localinst.acquire_lock
         verbose = @config["verbose"]
@@ -68,7 +69,9 @@ class RepositoryInfo
         end
         newinfo = newinfo.sort_by{|port| port["metadata"]["name"] }
         @ports = newinfo.map{|x| Port.new(x["metadata"], x["url"], @config) }
+        oldports = File.open(@cachefile){|f| YAML.load(f)} || [] rescue []
         File.open(@cachefile, "wb") { |f| f.write newinfo.to_yaml }
+        return changes_since(oldports, newinfo, notify_since)
     ensure
         localinst.release_lock unless localinst.nil?
     end
@@ -76,6 +79,28 @@ class RepositoryInfo
     # Returns an array of Port objects corresponding to the available ports.
     def ports
         @ports
+    end
+
+    private
+    def changes_since(old_info, new_info, since_when)
+        old_info = Hash[*old_info.map{|x| [x["metadata"]["name"], x["metadata"]]}.flatten]
+        new_info = Hash[*new_info.map{|x| [x["metadata"]["name"], x["metadata"]]}.flatten]
+        newports = (new_info.keys - old_info.keys).sort
+        added_ports = []
+        modified_ports = []
+        newports.each do |pname|
+            if new_info[pname]["date"] && Time.rfc2822(new_info[pname]["date"]) > since_when 
+                added_ports << new_info[pname]
+            end
+        end
+        commonports = (new_info.keys - newports).sort
+        commonports.each do |pname|
+            next unless new_info[pname]["version"] != old_info[pname]["version"]
+            if new_info[pname]["date"] && Time.rfc2822(new_info[pname]["date"]) > since_when 
+                modified_ports << [old_info[pname], new_info[pname]]
+            end
+        end
+        return added_ports, modified_ports
     end
 end
 

@@ -83,6 +83,10 @@ class LocalInstallation
         apply_pending_rollbacks if clean_state
     end
 
+    def repository_info
+        @repositoryinfo
+    end
+
     def clean_caches
         acquire_lock
         @packagecache.cleanup

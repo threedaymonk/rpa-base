@@ -6,6 +6,7 @@
 require 'rpa/base'
 require 'rpa/helper'
 require 'rpa/classification'
+require 'time'
 
 module RPA
         
@@ -65,8 +66,11 @@ module Install
                 define_method(field) do |*args|
                     vmethod = "validate_#{field}"
                     args = send(vmethod, *args)
-                    @metadata ||= {'platform' => ::Config::CONFIG['target'],
-                            'rpaversion' => RPA::VERSION} # full blown object?
+                    #FIXME: full blown object?
+                    @metadata ||= 
+                        {'platform' => ::Config::CONFIG['target'],
+                         'rpaversion' => RPA::VERSION, 
+                         'date' => Time.new.rfc2822} 
                     @metadata[field.to_s] = args
                     instance_variable_set "@#{field}", args
                 end
