@@ -8,7 +8,7 @@ module RPA
 module Transaction
     require 'rbconfig'
     
-    if /dos|win32/i.match ::Config::CONFIG["arch"]
+    if /dos|win32|cygwin/i.match ::Config::CONFIG["arch"]
         def self.atomic_write(destfile, data)
             # no file locking, fstat is bogus
             tmpname = "#{destfile}.#{Time.new.to_i}.#{rand(10000)}"

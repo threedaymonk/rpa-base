@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
 require 'rpa/base'
+require 'rpa/util'
 require 'rpa/install'
 require 'rpa/package'
 require 'yaml'
@@ -20,11 +21,16 @@ portinfo = []
 RPA::Install.auto_install = false
 Dir.chdir(ARGV[2]) do 
     Dir["*"].each do |portdir|
-        load File.join(portdir, "install.rb")
+        next unless File.dir? portdir
+        puts "Loading #{portdir}/install.rb"
+        Dir.chdir(portdir) { load "install.rb" }
         meta = RPA::Install.children.last.metadata
-        url = baseurl + (baseurl[-1] == '/' ? "": '/') + portdir + ".rps"
+        dest = %w[name version].map{|x| meta[x]}.join "_"
+        url = baseurl + (baseurl[-1] == '/' ? "": '/') + dest + ".rps"
+        meta.delete "platform" # don't want it for now
         portinfo << {"metadata" => meta, "url" => url }       
-        RPA::Package.pack(portdir, "#{portdir}.rps")
+        puts "Creating #{dest}.rps"
+        RPA::Package.pack(portdir, "#{dest}.rps")
     end
 end
 

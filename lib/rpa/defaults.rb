@@ -6,7 +6,7 @@
 require 'rbconfig'
 
 module RPA
-    RPABASE_VERSION = "0.1.1"
+    RPABASE_VERSION = "0.2.0"
     VERSION = "0.0"
     module Defaults
 

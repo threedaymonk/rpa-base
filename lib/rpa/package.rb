@@ -7,6 +7,7 @@ require 'yaml'
 require 'yaml/syck'
 require 'fileutils'
 require 'rpa/base'
+require 'rpa/open-uri'
 
 module RPA
 
@@ -411,7 +412,17 @@ class TarReader
             size = entry.size
             yield entry
             skip = (512 - (size % 512)) % 512
-            @io.read(size - entry.bytes_read) # discard unread data
+            if @io.respond_to? :seek
+                # avoid reading...
+                @io.seek(size - entry.bytes_read, IO::SEEK_CUR)
+            else
+                pending = size - entry.bytes_read
+                while pending > 0
+                    bread = @io.read([pending, 4096].min).size
+                    raise UnexpectedEOF if @io.eof?
+                    pending -= bread
+                end
+            end
             @io.read(skip) # discard trailing zeros
             # make sure nobody can use #read, #getc or #rewind anymore
             entry.close
@@ -431,7 +442,7 @@ class TarInput
     class << self; private :new end
 
     def initialize(filename)
-        @io = File.open(filename, "rb")
+        @io = open(filename, "rb")
         @tarreader = TarReader.new @io
         has_meta = false
         @tarreader.each do |entry|
@@ -485,7 +496,10 @@ class TarInput
         if entry.is_directory?
             dest = File.join(destdir, entry.full_name)
             if file_class.dir? dest
-                @fileops.chmod entry.mode, dest
+                begin
+                    @fileops.chmod entry.mode, dest
+                rescue Exception
+                end
             else
                 @fileops.mkdir_p(dest, :mode => entry.mode)
             end
@@ -626,6 +640,20 @@ module Package
             end
         end
     end
+
+    def normalized_name(metadata)
+        metadata["name"] + "_" + metadata["version"] + '_' +
+            metadata["platform"] + '.rpa'
+    end
+
+    def name_matcher(name, version = nil, platform = nil)
+        s = "#{name}_"
+        s << [version, platform].map{|x| (x || "*")}.join("_")
+        s << ".rpa"
+        s
+    end
+
+    module_function :normalized_name, :name_matcher
 
     class << self
         def file_class

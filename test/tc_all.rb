@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$:.unshift ".."
+$:.unshift "../lib"
 $".unshift "tc_all.rb"
 puts <<EOF
 This test will take a while to complete (around 30 seconds on a K7

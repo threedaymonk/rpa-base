@@ -68,6 +68,11 @@ class HelperBase
         @logger.log("extconf: " + args.inspect) if @logger
         system "#{@config["ruby-prog"]} extconf.rb " + args.join(" ")
     end
+    
+    def ruby(*args)
+        @logger.log("ruby: " + args.inspect) if @logger
+        system "#{@config["ruby-prog"]} " + args.join(" ")
+    end
 
     def run(installer)
         @config = installer.config
@@ -99,10 +104,10 @@ class Buildpkg < HelperBase
     def run(installer)
         super
         meta = installer.metadata
-        destname = meta["name"] + '_' + meta["version"] + '_' +
-            meta["platform"] + '.rpa'
+        destname = Package.normalized_name meta
         puts "Building package in #{destname}." if @config["verbose"] >= 4
         Package.pack(@src, destname)
+        installer.package_file = destname
     end
 end
 
@@ -143,39 +148,6 @@ class Buildextensions < HelperBase
 end
 
 
-class Checkconflicts < HelperBase
-    def run(installer)
-        super
-        meta = installer.metadata
-        pkg = meta["name"] + '_' + meta["version"] + '_' + 
-            meta["platform"] + '.rpa'
-        linst = RPA::LocalInstallation.instance(@config)
-        previously_installed_files = linst.installed_files
-        puts "Checking for file conflicts in #{meta["name"]}." if @config["verbose"] >= 2
-        Package.open(pkg) do |inpkg|
-            inpkg.each do |entry| 
-                next if entry.is_directory
-                prev = previously_installed_files[entry.name]
-                # file already there, and not managed by RPA
-                # OR file managed, belongs to another port
-                if File.exist?(File.join(@config["prefix"], entry.name)) && prev == nil
-                    if @config["force"]
-                        puts "WARNING: file #{entry.name} will be overwritten."
-                    else
-                        raise "File #{entry.name} in #{meta["name"]} " + 
-                            "conflicts with a previously installed file."
-                    end
-                elsif (prev && prev != meta["name"])
-                    raise "File #{entry.name} in #{meta["name"]} " +
-                        "conflicts with #{prev}."
-                end
-            end
-        end
-
-    end
-end
-
-
 class Clean < HelperBase
     def initialize(subdirs = "", logger = nil)
         @args = subdirs 
@@ -210,6 +182,7 @@ end
 class Extractpkg < HelperBase
     def run(installer)
         super
+        return if @config["build"]   # build only
         meta = installer.metadata
         pkgfile = meta["name"] + '_' + meta["version"] + '_' +
             meta["platform"] + '.rpa'
@@ -273,11 +246,17 @@ class Fixshebangs < HelperBase
 end
 
 class InstallStuffBase < HelperBase
-    def initialize(filesordir = nil, dstsubdir = nil, recursive = true, logger = nil)
+    def initialize(filesordir = nil, dstsubdir = nil, strip = false, recursive = true,
+                   logger = nil)
         #TODO: use named params?
         @filesordirs = filesordir
         @dstsubdir = dstsubdir
         @recursive = recursive
+        if strip && (!filesordir || !filesordir.kind_of?(Array))
+            @strip = filesordir
+        else
+            @strip = nil
+        end
         super(logger)
     end
 
@@ -295,20 +274,27 @@ class InstallStuffBase < HelperBase
             end
         else
             dir = @filesordirs || default_srcdir(@config, installer)
-            copy_dir(dir, installer, base_destdir) if file_class.dir? dir
+            copy_dir(dir, dir, installer, base_destdir) if file_class.dir? dir
         end
     end
 
-    def copy_dir(dname, installer, base_destdir = nil)
+    def copy_dir(dname, strip, installer, base_destdir = nil)
         base_destdir ||= default_base_destdir(@config, installer)
         all_files_in(dname).each do |fname|
-            destdir = File.join(base_destdir, (@dstsubdir || ""), 
-                                dname.split('/')[1..-1].join('/'))
-            install_file(File.join(dname, fname), destdir)
+            if @strip
+                dst = dname.sub(/#{Regexp.escape(@strip)}/, "")#.split('/')[1..-1].join('/')
+                destdir = File.join(base_destdir, (@dstsubdir || ""), dst)
+            else
+                destdir = File.join(base_destdir, (@dstsubdir || ""), 
+                                    dname.sub(/#{Regexp.escape(strip)}/, ""))
+            end
+            filename = File.join(dname, fname)
+            install_file(filename, destdir) if file_selected? filename
         end
         return unless @recursive
         all_dirs_in(dname).each do |subdname|
-            copy_dir(dname + "/" + subdname, installer, base_destdir)
+            next if dname == "." && subdname == "rpa"
+            copy_dir(dname + "/" + subdname, strip, installer, base_destdir)
         end
     end
 
@@ -332,10 +318,23 @@ class InstallStuffBase < HelperBase
         0644
     end
 
+    def file_selected?(fname)
+        true
+    end
+
 end
 
 
 class Installchangelogs < HelperBase
+end
+
+class Installdata < InstallStuffBase
+    def self.default_srcdir(config, installer)
+        "data" 
+    end
+    def self.default_base_destdir(config, installer)
+        "share"
+    end
 end
 
 class Installdependencies < HelperBase
@@ -348,12 +347,46 @@ class Installdependencies < HelperBase
         #puts "Package #{meta["name"]} depends on #{meta["requires"].inspect}"
         name = meta["name"]
         deps = installer.metadata["requires"] || []
-        puts "Installing dependencies #{deps}." if @config["verbose"] >= 4
-        deps.each do |port|
-            repos.install(port, name) 
+        if @config["build"]
+            if @config["verbose"] >= 4 && deps.size != 0
+                puts "Building dependencies #{deps.join(' ')}."  
+            end
+            deps.each do |port|
+                repos.build(port) 
+            end
+        else
+            if @config["verbose"] >= 4 && deps.size != 0
+                puts "Installing dependencies #{deps.join(' ')}." 
+            end
+            deps.each do |port|
+                repos.install(port, name) 
+            end
         end
     end
 end
+
+#TODO: refactor
+class Installpredependencies < HelperBase
+    def run(installer)
+        super
+        repos = RPA::LocalInstallation.instance(@config)
+        RPA::Install.auto_install = false
+
+        meta = installer.metadata
+        name = meta["name"]
+        deps = meta["build_requires"] || []
+        if @config["verbose"] >= 4 && deps.size != 0
+            puts "Installing pre-dependencies #{deps.join(' ')}." 
+        end
+        deps.each do |port|
+           # we specify a revdep, which it really isn't, but it doesn't
+           # matter cause the build_required pkg isn't in the requires so
+           # it won't be marked in the GC phase 
+           repos.install(port, name) 
+        end
+    end
+end
+
 
 class Installdocs < InstallStuffBase
     def self.default_srcdir(config, installer)
@@ -401,31 +434,18 @@ class Installexecutables < InstallStuffBase
     end
 end
 
-class Installextensions < HelperBase
-    def run(installer)
-        super
-        EXT_SUBDIRS.each do |dir|
-            next unless file_class.dir? dir
-            install_extension(dir)
-            sitearchdir = ::Config::CONFIG["sitearchdir"]
-            sitearchdir.gsub!(/^#{::Config::CONFIG["prefix"]}/, "")
-            install_extension(dir, File.join("rpa", @dest, sitearchdir))
-        end
+class Installextensions < InstallStuffBase
+    def self.default_srcdir(config, installer)
+        "ext" 
     end
 
-    def install_extension(dname, destdir = nil)
-        destdir ||= "rpa/#{@dest}/#{@config["so-dir"]}"
-        created = false
-        all_files_in(dname).select{|x| x =~ DLEXT}.each do |fname|
-            unless created
-                @fileops.mkdir_p destdir 
-                created = true
-            end
-            @fileops.install "#{dname}/#{fname}", destdir, :mode => 0555
-        end
-        all_dirs_in(dname).each do |subdname|
-            install_extension(dname + '/' + subdname, destdir)
-        end
+    def self.default_base_destdir(config, installer)
+        sitearchdir = ::Config::CONFIG["sitearchdir"]
+        sitearchdir.gsub(/^#{::Config::CONFIG["prefix"]}/, "")
+    end
+
+    def file_selected? name
+        DLEXT.match name
     end
 end
 
@@ -484,7 +504,7 @@ class Installrdoc < HelperBase
         #FIXME: RDoc's programmatic interface is broken, broken, broken
         #rdoc = RDoc::RDoc.new
         base = Installdocs.default_base_destdir(@config, installer)
-        if system(File.join(::Config::CONFIG["bindir"], "rdoc1.8"), "-v")
+        if (system(File.join(::Config::CONFIG["bindir"], "rdoc1.8"), "-v") rescue false)
             rdoc_path = File.join(::Config::CONFIG["bindir"], "rdoc1.8")
         else
             rdoc_path = File.join(::Config::CONFIG["bindir"], "rdoc")
@@ -510,11 +530,11 @@ class Installrdoc < HelperBase
         # RDoc shows a lot of crap when an exception is raised
         begin
             if IS_BROKEN_WINDOWS
-                unless system(ruby, rdoc_path, *args)
+                unless (system(ruby, rdoc_path, *args) rescue false)
                     puts "WARNING: RI datafile generation failed" if @config["verbose"] >= 2
                 end
             else
-                unless system(rdoc_path, *args)
+                unless (system(rdoc_path, *args) rescue false)
                     puts "WARNING: RI datafile generation failed" if @config["verbose"] >= 2
                 end
             end
@@ -534,11 +554,11 @@ class Installrdoc < HelperBase
         # RDoc shows a lot of crap when an exception is raised
         begin
             if IS_BROKEN_WINDOWS
-                unless system(ruby, rdoc_path, *args)
+                unless (system(ruby, rdoc_path, *args) rescue false)
                     puts "WARNING: RDoc datafile generation failed" if @config["verbose"] >= 2
                 end
             else
-                unless system(rdoc_path, *args)
+                unless (system(rdoc_path, *args) rescue false)
                     puts "WARNING: RDoc datafile generation failed" if @config["verbose"] >= 2
                 end
             end
@@ -595,9 +615,12 @@ end
 class RunUnitTests < HelperBase
     class UnitTestFailure < StandardError; end
     def run(installer)
-        require 'test/unit/ui/console/testrunner'
-        require 'test/unit/ui/testrunnerutilities'
         super
+        unless @config["no-tests"] #FIXME: "negative logic" sucks
+            puts "WARNING: skipping unit tests." if @config["verbose"] >= 4
+            return
+        end
+        return if @config["build"]
         @meta = installer.metadata
         reldir = Installtests.default_base_destdir(@config, installer)
         dir = File.join(@config["prefix"], reldir)
@@ -611,9 +634,9 @@ class RunUnitTests < HelperBase
                     #FIXME: kludge
                     suite = @meta["test_suite"]
                     if File.exist? suite
-                        run_suitefile(suite)
+                        run_testfile(suite)
                     else
-                        run_suitefile(File.basename(suite))
+                        run_testfile(File.basename(suite))
                     end
                 ensure
                     $VERBOSE = oldverbose
@@ -631,21 +654,10 @@ class RunUnitTests < HelperBase
             end
         end
     end
-
-    def run_suitefile(fname)
-        old = get_testcases
-        load fname
-        suite = Test::Unit::TestSuite.new("#{@meta['name']}-#{@meta['version']}")
-        (get_testcases - old).each {|x| suite << x}
-        ret = Test::Unit::UI::Console::TestRunner.run(suite,
-                                                      Test::Unit::UI::SILENT)
-        unless ret.passed?
-            raise UnitTestFailure, "Unit tests for #{@meta["name"]} failed. " +
-                "#{ret.error_count} errors, #{ret.failure_count} failures."
-        end
-    end
     
     def run_testfile(fname)
+        require 'test/unit/ui/console/testrunner'
+        require 'test/unit/ui/testrunnerutilities'
         old = get_testcases
         load fname
         testcases = get_testcases - old

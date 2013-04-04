@@ -72,6 +72,12 @@ class Config
     def_param("debug", "Debug mode", nil, "--debug") { false }
     def_param("force", "Force installation despite file conflicts", nil,
               "--force") { false }
+    def_param("build", "Only buils the .rpa packages.", nil,
+              "--build") { false }
+    def_param("parallelize", "Parallelize operations.", nil,
+              "--parallelize") { false }
+    def_param("no-tests", "Skip unit tests on install.", nil,
+              "--no-tests") { true }
 
     def self.new(argv)
         options = parse(argv)
@@ -126,6 +132,8 @@ class Config
         end
         options
     end
+    
+    attr_reader :values
     
     def initialize(values)
         @values = values.clone

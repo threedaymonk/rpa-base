@@ -54,11 +54,12 @@ module Install
         include RPA::Classification::TOP
         #TODO: make something more sensible with default vals, etc
         FIELDS = [ :name, :version, :requires, :suggests, :classification, 
-                :description, :test_suite]
+                :description, :test_suite, :build_requires]
         class << self
             attr_reader :metadata, :config
             attr_writer :config
             attr_accessor :aborted
+            attr_accessor :package_file
 
             FIELDS.each do |field|
                 define_method(field) do |*args|
@@ -72,6 +73,7 @@ module Install
             end
 
             def run
+                @package_file = nil
                 validate_metadata
                 @tasks.each do |task|
                     task.each do |subtask|
@@ -115,6 +117,10 @@ module Install
                 require_list
             end
 
+            def validate_build_requires(*require_list)
+                validate_requires(*require_list)
+            end
+
             # check that all suggested packaged actually exist
             def validate_suggests(*suggestions)
                 suggestions
@@ -140,7 +146,8 @@ module Install
                 
 
             private
-            meths = { :prebuild => 0, :build => 1, :install => 2 }
+            meths = { :prebuild => 0, :build => 1, :install => 2,
+                      :postinstall => 3}
             meths.each do |m, idx|
                 module_eval <<-EOF
                     def #{m}(&block)
@@ -199,35 +206,39 @@ module Install
 
     class PureRubyLibrary < InstallerBase
         def self.inherited_hook
-            @tasks = 
-                [ [testversion, installdependencies, clean],
+            @tasks = [ 
+                [testversion, installpredependencies, installdependencies, clean],
                 [installchangelogs, installdocs,
                     installrdoc, installman, installexamples,
                 compress, installtests, installmodules,
                 fixperms],
                 [ md5sums, moduledeps, installmetadata, buildpkg, 
-                    checkconflicts, extractpkg, rununittests] ]
+                    extractpkg, rununittests],
+                []
+            ]
         end
     end
 
     class Application < InstallerBase
         def self.inherited_hook
-            @tasks = 
-                [ [testversion, installdependencies, clean],
+            @tasks = [
+                [testversion, installpredependencies, installdependencies, clean],
                 [buildextensions, installchangelogs, installdocs,
                     installrdoc, installman, installexamples,
                 compress, installtests, installmodules, installexecutables,
                 installextensions, moduledeps, fixperms,
                 fixshebangs], 
                 [ md5sums, moduledeps, installmetadata, buildpkg, 
-                    checkconflicts, extractpkg, rununittests] ]
+                    extractpkg, rununittests],
+                []
+            ]
         end
     end
 
     class FullInstaller < InstallerBase
         def self.inherited_hook
             @tasks = [
-                [testversion, installdependencies, clean],
+                [testversion, installpredependencies, installdependencies, clean],
                     [buildextensions, installchangelogs, installdocs,
                         installrdoc, installman,
                     installexamples, compress,
@@ -235,7 +246,9 @@ module Install
                     installextensions, moduledeps,
                     fixperms, fixshebangs],
                     [ md5sums, moduledeps, installmetadata, buildpkg, 
-                        checkconflicts, extractpkg, rununittests] ]
+                        extractpkg, rununittests],
+                []
+            ]
         end
     end
 end # module Install

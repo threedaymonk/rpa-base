@@ -1,4 +1,10 @@
 
+- signed packages/ports
+- extend the 'package cache' concept to make it work remotely (binary repos)
+- system-wide conf system with several frontends
+- ask for confirmation before installing deps, etc
+- ports should specify which archs. they can be built on; packages, which
+  archs they can be installed under
 - more & better unit testing!!! (>90% coverage would be nice too)
 - refactor rpa/base.rb and document it, esp. LocalInstallation.
 - begin to think about the RPA policy

@@ -13,14 +13,18 @@ module RPA
 class RPAFrontend < Frontend
 
     COMMANDS = [
-        ['install', '[port]...', 'Installs the given ports'],
+        ['install', '[port|port.rps]...', 'Installs the given ports'],
         ['remove', '[port]...', 'Removes the given ports'],
+        ['dist-upgrade', '', 'Upgrades all ports'],
+        ['build', '[port]...', 'Builds the given ports'],
+        ['source', '[port]...', 'Download the specified ports'],
         ['query', '[port]...', 'Query the repository'],
         ['list', '', 'List currently installed ports'],
         ['info', '[port]...', 'Gives info on installed ports'],
         ['update', '', 'Update repository data'],
         ['rollback', '', 'Recover from previous abort'],
         ['check', '[port]...', 'Check status of the given ports'],
+        ['clean', '', 'Purges package and port caches.'],
         ['help', '', 'Displays help for commands']
     ]
 
@@ -34,10 +38,11 @@ class RPAFrontend < Frontend
         options = OpenStruct.new
         options.name = nil
         options.description = nil
-        options.simple = false
+        options.extended = false
         options.requires = []
         options.classification = []
         options.eval = nil
+        options.show_version = false
         options.eval_display = '__default__'
         # if not specified, __default__ will be replaced by the appropriate
         # expression (x minus md5sums, files, dirs, etc)
@@ -64,13 +69,9 @@ class RPAFrontend < Frontend
             opts.on("-q", "--quiet", "Only output errors") do 
                 options.quiet = true
             end
-            
-            opts.on("-f", "--force", "Force installation despite file conflicts") do |o|
-                config_args << "--force" 
-            end
 
-            opts.on("-s", "--simple", "Simple port display") do
-                options.simple = true
+            opts.on("-x", "--extended", "Extended port display") do
+                options.extended = true
             end
             opts.on("--verbose LEVEL", "Verbosity level (4)") do |o|
                 config_args << "--verbose" 
@@ -80,8 +81,24 @@ class RPAFrontend < Frontend
                 config_args << "--debug" 
             end
             opts.on("-v", "--version", "Version info") do |o|
-                puts "rpa (rpa-base #{RPA::RPABASE_VERSION}) RPA #{RPA::VERSION}"
+                options.show_version = true
             end
+
+            opts.separator "Install options:"
+
+            opts.on("-f", "--force", "Force installation despite file conflicts") do |o|
+                config_args << "--force" 
+            end
+            
+            opts.on("-p", "--parallelize", "Parallelize operations") do |o|
+                config_args << "--parallelize" 
+            end
+            
+            
+            opts.on("--no-tests", "Don't run unit tests on install") do |o|
+                config_args << "--no-tests" 
+            end
+
 
             opts.separator "Query/info commands:"
 
@@ -136,14 +153,30 @@ class RPAFrontend < Frontend
     end
 
     def do_cmd(cmd)
+        if @options.show_version
+            @localinst = LocalInstallation.instance @config, false
+            version = @localinst.retrieve_metadata("rpa-base")["version"]
+            puts "rpa (rpa-base #{version}) RPA #{RPA::VERSION}"
+        end
         if cmd.empty?
-            puts @options.text
+            puts @options.text unless @options.show_version
             exit 2
         end
 
         RPA.do_cleanup = false if @options.debug
 
         case cmd[0]
+        when 'build'
+            cmd.shift
+            if cmd.empty?
+                $stderr.puts "Must specify ports to build."
+                exit 4
+            end
+
+            # 2nd arg: don't return to clean state (not needed), so parallel
+            # builds work
+            @localinst = LocalInstallation.instance @config, false
+            build(cmd)
         when 'install'
             cmd.shift
             if cmd.empty?
@@ -151,8 +184,22 @@ class RPAFrontend < Frontend
                 exit 4
             end
 
-            @localinst = LocalInstallation.instance @config
+            @localinst = LocalInstallation.instance @config, false
             install(cmd)
+        when 'dist-upgrade'
+            @localinst = LocalInstallation.instance @config, false
+            dist_upgrade(cmd)
+        when 'source'
+            cmd.shift
+            if cmd.empty?
+                $stderr.puts "Must specify ports to install."
+                exit 4
+            end
+
+            @localinst = LocalInstallation.instance @config
+            cmd.each do |port|
+                @localinst.get_port port, "."
+            end
         when 'remove'
             cmd.shift
             if cmd.empty?
@@ -177,12 +224,12 @@ class RPAFrontend < Frontend
                 ports = eval_query(cmd, ports)
             end
 
-            puts "Matches: "
+            puts "Matching available ports: "
             display_ports(ports)
         when 'list'
             puts "Installed ports:"
             @localinst = LocalInstallation.instance @config
-            @localinst.installed_ports.sort.each{|x| puts x}
+            list_installed_ports
         when 'info'
             cmd.shift
 
@@ -201,8 +248,8 @@ class RPAFrontend < Frontend
                 ports = eval_query(cmd, ports)
             end
 
-            puts "Matches: "
-            display_ports(ports)
+            puts "Matching installed ports: "
+            display_ports(ports, true)
         when 'update'
             update(cmd)
         when 'check'
@@ -213,6 +260,9 @@ class RPAFrontend < Frontend
             end
             @localinst = LocalInstallation.instance @config
             check(cmd)
+        when 'clean'
+            @localinst = LocalInstallation.instance @config
+            @localinst.clean_caches
         when 'rollback'
             @localinst = LocalInstallation.instance @config
             rollback(cmd)
@@ -226,13 +276,38 @@ class RPAFrontend < Frontend
             puts "Examples: "
             puts "  rpa install ri-rpa --verbose 5"
             puts "  rpa remove types"
-            puts "  rpa query ri-rpa"
+            puts "  rpa query -x ri-rpa"
             puts "  rpa query -e 'requires && requires.include?(\"types\")' -D name,url,requires"
             puts "  rpa info types -D md5sums"
-            puts "  rpa info ri-rpa"
+            puts "  rpa info -x ri-rpa"
         else
             $stderr.puts "Invalid command. See usage."
             exit 3
+        end
+    end
+ 
+    def list_installed_ports
+        @localinst.installed_ports.sort.each do |pname|
+            meta = @localinst.retrieve_metadata pname
+            name, version, desc = %w[name version description].map{|x| meta[x] }
+            short_desc = desc.split(/\n/).first.chomp
+            puts "%-13s %10s  %s" % [name, version, short_desc]
+        end
+    end
+
+    def build(cmd)
+        warn_if_no_port_info
+        puts "Building ports" unless @options.quiet
+
+        begin
+            cmd.each do |port|
+                puts "  Installing #{port}" unless @options.quiet
+                @localinst.build(port, true)
+            end
+        rescue => e
+            $stderr.puts "Error: #{e} aborting"
+            raise if @options.debug
+            exit 6
         end
     end
 
@@ -242,23 +317,53 @@ class RPAFrontend < Frontend
 
         previous_ports = @localinst.installed_ports
         begin
+            cmd.each do |port| 
+                next if /\.rps\z/.match port
+                @localinst.build port
+            end
+            @localinst.acquire_lock
+            # we must make sure we're in a clean state cause it was not done
+            # when initialing the LocalInstallation
+            @localinst.apply_pending_rollbacks
             cmd.each do |port|
-                puts "  Installing #{port}" unless @options.quiet
-                @localinst.install(port)
+                if port =~ /\.rps\z/
+                    # it's a .rps file
+                    puts "  Installing from #{port}" unless @options.quiet
+                    @localinst.install_from_port port
+                else
+                    puts "  Installing #{port}" unless @options.quiet
+                    @localinst.install(port)
+                end
             end
         rescue => e
             $stderr.puts "Error: #{e} aborting"
-            installed = @localinst.installed_ports
-            installed = (installed - previous_ports)
-            unless installed.empty?
-                puts "Installed the following ports:"
-                installed.sort.each{|pname| puts pname}
-            end
             @localinst.apply_pending_rollbacks
             raise if @options.debug
             exit 6
         end
         @localinst.commit
+    end
+    
+    def dist_upgrade(cmd)
+        warn_if_no_port_info
+        puts "Upgrading the whole distribution" unless @options.quiet
+
+        previous_ports = @localinst.installed_ports
+        begin
+            # we must make sure we're in a clean state cause it was not done
+            # when initialing the LocalInstallation
+            @localinst.apply_pending_rollbacks
+            previous_ports.sort.each do |port| 
+                next unless @localinst.retrieve_metadata(port)["wanted"]
+                @localinst.install port
+                @localinst.commit
+            end
+        rescue => e
+            $stderr.puts "Error: #{e} aborting"
+            @localinst.apply_pending_rollbacks
+            raise if @options.debug
+            exit 6
+        end
     end
 
     def remove(cmd)
@@ -285,7 +390,7 @@ class RPAFrontend < Frontend
         end
         #TODO: should we commit here or only after removing the unneeded
         #      ports? Both lead to clean states anyway.
-        @localinst.commit 
+        #@localinst.commit 
         @localinst.gc_unneeded_ports
         @localinst.commit
     end
@@ -397,8 +502,17 @@ class RPAFrontend < Frontend
         @localinst.apply_pending_rollbacks 
     end
 
-    def display_ports(ports)
-        unless @options.simple
+    def display_ports(ports, fancy_colors = false)
+        case RUBY_PLATFORM
+        when /cygwin/i  # keep the value
+        when /dos|win/i
+            fancy_colors = false
+        end
+        temp = @repository.ports.map{|p| p.metadata}
+        versions = {}
+        temp.each{|meta| versions[meta["name"]] = meta["version"]}
+        
+        if @options.extended
             use_pp = false
             if @options.eval_display == "__default__"
                 @options.eval_display = <<-EOF
@@ -438,8 +552,24 @@ class RPAFrontend < Frontend
                 end
             end
         else
+            namelen = ports.inject(0){|s,x| (l=x["name"].size) > s ? l : s}
+            versionlen = ports.inject(0){|s,x| (l=x["version"].size) > s ? l : s}
+            versionlen += 9 if fancy_colors
             ports.each do |p|
-                puts "\t- %-35s %s" % [p['name'], p['description'].gsub("\n", ' ')[0..40]]
+                name, version, desc = %w[name version description].map{|x| p[x] }
+                short_desc = desc.split(/\n/).first.chomp
+                if fancy_colors
+                    #FIXME: robustify the version comparison below (factor it out)
+                    v1 = version.split(/\.|-/).map{|x| /([0-9]+)/ =~ x ? x.to_i: x}
+                    if versions[name]
+                        v2 = versions[name].split(/\.|-/).map{|x| /([0-9]+)/ =~ x ? x.to_i: x}
+                        color = (v1 <=> v2) == -1 ? 31 : 32
+                    else
+                        color = 36
+                    end
+                    version = "\x1b[#{color}m#{version}\x1b[0m"
+                end
+                puts "%-#{namelen}s  %#{versionlen}s  %s" % [name, version, short_desc]
             end
         end
     end

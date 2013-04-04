@@ -1,0 +1,1765 @@
+2004-8-5 14:31 (+0200)  batsman  rev 655
+
+ * install.rb, lib/rpa/base.rb:
+    LocalInstallation#force_transacted_install_package: output a message about
+    --force when there are conflicts with unmanaged files.
+
+2004-8-5 11:31 (+0200)  batsman  rev 651
+
+ * install.rb, lib/rpa/helper.rb:
+    Added  Helper::HelperBase#ruby.
+
+2004-8-5 0:30 (+0200)  batsman  rev 649
+
+ * install.rb, lib/rpa/rpafrontend.rb, bin/rpa-buildport:
+    Added bin/rpa-buildport.
+    Minor changes in the code for rpa info.
+
+2004-8-3 23:4 (+0200)  batsman  rev 635
+
+ * lib/rpa/package.rb:
+    Use open-uri and a plain open() in TarInput to enable things like
+      rpa install  http://www.foo.com/bla.rps
+
+2004-8-3 22:56 (+0200)  batsman  rev 634
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    RPAFronted#display_ports: don't bomb when the package is not in the repos,
+    just use another color for the version number.
+
+2004-8-2 22:48 (+0200)  batsman  rev 633
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFronted#display_ports: fixed bug when comparing versions.
+
+2004-8-2 21:55 (+0200)  batsman  rev 632
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFronted#display_ports: can do fancy coloring of the version number (green
+    if up-to-date, red otherwise).
+
+2004-8-2 21:32 (+0200)  batsman  rev 631
+
+ * install.rb, lib/rpa/helper.rb:
+    Helper::Installrdoc#run: rescue exceptions thrown by system (for 1.9's new
+    semantics).
+
+2004-8-1 12:35 (+0200)  batsman  rev 620
+
+ * lib/rpa/base.rb:
+    LocalInstallation#build: chdir to the unpacked port before loading
+    install.rb.
+
+2004-7-31 11:47 (+0200)  batsman  rev 618
+
+ * TODO:
+    Updated.
+
+2004-7-31 11:43 (+0200)  batsman  rev 617
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    RPAFrontend#display_ports: prettified output.
+
+2004-7-29 15:13 (+0200)  batsman  rev 605
+
+ * install.rb, lib/rpa/package.rb:
+    Package::TarInput#extract_entry: ignore errors on chmod.
+
+2004-7-28 20:24 (+0200)  batsman  rev 604
+
+ * bin/rpa-buildrepos.rb:
+    Bugfix: wrong url stored into ports.info.
+
+2004-7-28 20:16 (+0200)  batsman  rev 603
+
+ * bin/rpa-buildrepos.rb:
+    Build the ports as name_version.rps .
+
+2004-7-28 19:39 (+0200)  batsman  rev 599
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    RPAFrontent#dist_upgrade: only upgrade explicitly ports which are marked as
+    wanted (deps. are updated as a side effect).
+
+2004-7-27 22:13 (+0200)  batsman  rev 596
+
+ * install.rb:
+    Updated rev. num.
+
+2004-7-27 22:13 (+0200)  batsman  rev 595
+
+ * lib/rpa/rpafrontend.rb:
+    Implemented dist-upgrade.
+
+2004-7-27 22:12 (+0200)  batsman  rev 594
+
+ * lib/rpa/helper.rb:
+    InstallStuffBase: the srcdir is removed from the dest dir path, e.g. 
+    installdocs "doc/bar" doesn't place the docs under bar/ in the docdir.
+
+2004-7-25 16:50 (+0200)  batsman  rev 583
+
+ * README.txt, install.rb:
+    Updated docs.
+
+2004-7-25 14:25 (+0200)  batsman  rev 582
+
+ * lib/rpa/helper.rb:
+    Helper::RunUnitTests: removed #run_suitefile, just use the generic mechanism.
+
+2004-7-21 18:16 (+0200)  batsman  rev 514
+
+ * install.rb, lib/rpa/base.rb:
+    LocalInstallation#build: save @config["build"] and restore after creating the
+    .rpa.
+
+2004-7-18 23:41 (+0200)  batsman  rev 507
+
+ * lib/rpa/helper.rb:
+    InstallStuffBase#copy_dir: don't descend into rpa/.
+
+2004-7-17 21:58 (+0200)  batsman  rev 487
+
+ * install.rb, lib/rpa/base.rb:
+    Fixed typo in LocalInstallation#check_conflicts.
+
+2004-7-17 13:17 (+0200)  batsman  rev 463
+
+ * lib/rpa/packagecache.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Added LocalInstallation#clean_caches.
+    PackageCache#cleanup: remove .rpa files too.
+    Implement 'rpa clean' in rpafrontend.rb.
+
+2004-7-17 13:4 (+0200)  batsman  rev 462
+
+ * install.rb, lib/rpa/rpafrontend.rb:
+    Prettified rpa -v.
+
+2004-7-16 23:7 (+0200)  batsman  rev 446
+
+ * bin/rpa-buildrepos.rb:
+    Tell what we're building as we do it.
+
+2004-7-16 22:22 (+0200)  batsman  rev 440
+
+ * lib/rpa/helper.rb:
+    Renamed Helper::InstallData to Installdata.
+
+2004-7-16 19:3 (+0200)  batsman  rev 432
+
+ * lib/rpa/rpafrontend.rb:
+    Clarified help messages.
+
+2004-7-16 18:59 (+0200)  batsman  rev 431
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFrontend#display_ports: prettier (like info).
+    Removed --simple and added --extended.
+
+2004-7-16 18:31 (+0200)  batsman  rev 430
+
+ * lib/rpa/transaction.rb:
+    Transaction.atomic_write: use dumbed-down version on cygwin too.
+
+2004-7-16 14:49 (+0200)  batsman  rev 428
+
+ * lib/rpa/helper.rb:
+    Helper::RunUnitTests: defer loading of TestUnit's code until we find a
+    testfile, to avoid getting those useless reports with 0 tests, 0 assertions.
+
+2004-7-16 14:46 (+0200)  batsman  rev 427
+
+ * lib/rpa/helper.rb:
+    Helper::RunUnitTests: don't run the tests in build mode.
+
+2004-7-16 14:43 (+0200)  batsman  rev 426
+
+ * install.rb, lib/rpa/helper.rb:
+    Subtle semantic changes in Helper::InstallStuffBase (install* family): the third
+    argument indicates whether the specified srcdir should be stripped away from
+    the destdir.
+    Reimplemented Installextensions with InstallStuffBase. 
+
+2004-7-15 22:43 (+0200)  batsman  rev 424
+
+ * lib/rpa/base.rb:
+    LocalInstallation#install_from_port: don't forget to register as wanted.
+
+2004-7-15 22:39 (+0200)  batsman  rev 423
+
+ * install.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Implemented LocalInstallation#install_from_port and 
+     rpa install foo.rps
+    which will install directly the specified .rps port.
+
+2004-7-15 19:55 (+0200)  batsman  rev 421
+
+ * install.rb:
+    Bumped revision.
+
+2004-7-15 19:53 (+0200)  batsman  rev 420
+
+ * lib/rpa/rpafrontend.rb:
+    Prettified rpa list.
+
+2004-7-15 14:31 (+0200)  batsman  rev 406
+
+ * install.rb, lib/rpa/helper.rb:
+    Implemented the InstallData helper.
+
+2004-7-15 13:8 (+0200)  batsman  rev 404
+
+ * install.rb:
+    Bumped revision.
+
+2004-7-15 12:55 (+0200)  batsman  rev 398
+
+ * lib/rpa/helper.rb, lib/rpa/install.rb:
+    Added the concept of build_requires. Implemented
+    Helper::Installpredependencies, added it to the default lists in
+    rpa/install.rb.
+    
+
+2004-7-14 19:32 (+0200)  batsman  rev 382
+
+ * lib/rpa/base.rb:
+    RPA::TEMP_DIR: use TMPDIR only if neither TMP nor TEMP where defined (TEMPDIR
+    can be bogus on win32).
+    
+
+2004-7-11 10:20 (+0200)  batsman  rev 381
+
+ * lib/rpa/base.rb:
+    LocalInstallation#build: specify the version number when checking if a package
+    needs to be built.
+
+2004-7-11 9:57 (+0200)  batsman  rev 380
+
+ * install.rb:
+    Bumped RPA revision number.
+
+2004-7-11 9:54 (+0200)  batsman  rev 379
+
+ * lib/rpa/packagecache.rb:
+    PackageCache#store_package: fixed the temporary name used to copy the package.
+
+2004-7-10 19:41 (+0200)  batsman  rev 378
+
+ * install.rb:
+    Hardcoded version numbers.
+
+2004-7-10 19:35 (+0200)  batsman  rev 377
+
+ * install.rb:
+    Bugfixes.
+
+2004-7-10 19:16 (+0200)  batsman  rev 376
+
+ * test/tc_all.rb:
+    Updated require path.
+
+2004-7-10 19:12 (+0200)  batsman  rev 375
+
+ * install.rb, lib/rpa.rb, lib/rpa/localmetadata.rb, lib/rpa/port.rb,
+  lib/rpa/open-uri.rb, lib/rpa/helper.rb, lib/rpa/adminfrontend.rb,
+  lib/rpa/package.rb, lib/rpa/packagecache.rb, lib/rpa/util.rb, lib/rpa/base.rb,
+  lib/rpa/frontend.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb,
+  lib/rpa/classification.rb, lib/rpa/transaction.rb, lib/rpa/packagestate.rb,
+  lib/rpa/config.rb, lib/rpa/repositoryinfo.rb, lib/rpa/defaults.rb:
+    Moved files to lib/.
+    Adapted install.rb.
+
+2004-7-10 19:5 (+0200)  batsman  rev 374
+
+ * install.rb, bin/rpa-buildrepos.rb:
+    Additional bootstrapping work.
+
+2004-7-10 18:20 (+0200)  batsman  rev 373
+
+ * install.rb:
+    Recover the default settings if rpa-base was installed previously.
+
+2004-7-10 17:3 (+0200)  batsman  rev 372
+
+ * lib/rpa/base.rb:
+    LocalInstallation#force_transacted_install_package: perform the conflict
+    detection that used to be in force_install_pkg_impl here, before starting the
+    transaction itself. This way, in case of file conflict, the pertinent files
+    aren't removed during the standard recovery procedures, since we detect the
+    conflict before they're engaged.
+
+2004-7-10 15:38 (+0200)  batsman  rev 371
+
+ * install.rb:
+    Bootstrapping: rpa-base installs itself.
+
+2004-7-4 17:57 (+0200)  batsman  rev 366
+
+ * lib/rpa/package.rb:
+    TarReader#each_entry: when skipping the unread data from an entry, use seek if
+    possible or do a chunked read.
+
+2004-7-4 14:27 (+0200)  batsman  rev 365
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb:
+    Removed the Checkconflicts helper; conflict detection is performed in
+    LocalInstallation#force_install_pkg_impl.
+    RPAFrontend: build the package(s) before installing, lock the local
+    installation before the actual install phase.
+
+2004-7-3 20:27 (+0200)  batsman  rev 364
+
+ * test/tc_Base.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    Implemented concurrent installs.
+    LocalInstallation#install: rely on #build to create the packages, acquire the
+    lock later and *don't* release it (to avoid the 'uncommitted trans. undone'
+    problem).
+    RPA::Config, RPAFrontend: added --parallelize.
+    LocalInstallation#acquire_lock: honor --parallelize (blocking lock).
+
+2004-7-2 12:39 (+0200)  batsman  rev 363
+
+ * test/tc_Base.rb:
+    Fixed unit tests.
+
+2004-6-27 16:6 (+0200)  batsman  rev 362
+
+ * lib/rpa/packagecache.rb:
+    PackageCache#store_package: preemptive win32 fix.
+
+2004-6-27 14:33 (+0200)  batsman  rev 361
+
+ * lib/rpa/repositoryinfo.rb:
+    RepositoryInfo#update: don't fail silently when the lock can't be obtained.
+
+2004-6-26 21:19 (+0200)  batsman  rev 360
+
+ * bin/rpa-buildrepos.rb:
+    Strip out bogus metadata (platform) when building the ports.info file.
+
+2004-6-26 21:14 (+0200)  batsman  rev 359
+
+ * lib/rpa/package.rb, lib/rpa/packagecache.rb, lib/rpa/base.rb:
+    Fixed several bugs in the package caching code.
+
+2004-6-26 20:52 (+0200)  batsman  rev 358
+
+ * lib/rpa/base.rb:
+    LocalInstallation#install: cache .rpa files as they are generated.
+
+2004-6-26 17:29 (+0200)  batsman  rev 357
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFrontend#remove: don't commit until the unneeded deps have been GCed.
+
+2004-6-26 17:4 (+0200)  batsman  rev 356
+
+ * lib/rpa/rpafrontend.rb:
+    Removed unneeded debug info in case of failure during build.
+
+2004-6-26 17:3 (+0200)  batsman  rev 355
+
+ * lib/rpa/base.rb:
+    RPA::LocalInstallation#install: reuse packages from the package cache if
+    available.
+
+2004-6-26 17:0 (+0200)  batsman  rev 354
+
+ * lib/rpa/packagecache.rb:
+    Fixed PackageCache#retrieve_package.
+
+2004-6-26 16:24 (+0200)  batsman  rev 353
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb:
+    Moved the conflict detection code to LocalInstallation#check_conflicts.
+
+2004-6-26 16:7 (+0200)  batsman  rev 352
+
+ * lib/rpa/install.rb:
+    RPA::Install: added a postinstall phase for all installers.
+
+2004-6-26 12:59 (+0200)  batsman  rev 351
+
+ * lib/rpa/helper.rb, lib/rpa/package.rb, lib/rpa/packagecache.rb,
+  lib/rpa/base.rb:
+    Implemented package caching (RPA::PackageCache).
+    Use it in LocalInstallation#build.
+
+2004-6-21 13:55 (+0200)  batsman  rev 345
+
+ * lib/rpa/base.rb:
+    LocalInstallation#apply_pending_rollbacks: don't acquire inst. lock if there's
+    no pending rollback.
+
+2004-6-21 10:46 (+0200)  batsman  rev 344
+
+ * lib/rpa/helper.rb:
+    Helper::Installdependencies#run: fixed message.
+
+2004-6-21 1:6 (+0200)  batsman  rev 343
+
+ * lib/rpa/helper.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    Implemented the --no-tests option which skips the unit tests on install.
+
+2004-6-21 0:26 (+0200)  batsman  rev 342
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Implemented rpa source <ports> which downloads the requested ports (similar to
+    apt-get source).
+
+2004-6-20 17:3 (+0200)  batsman  rev 341
+
+ * lib/rpa/defaults.rb:
+    Bumped version number to 0.2.0.
+
+2004-6-20 17:1 (+0200)  batsman  rev 340
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb,
+  lib/rpa/config.rb:
+    Implemented rpa build, which creates the needed .rpa files in the current
+    directory.
+
+2004-6-20 15:26 (+0200)  batsman  rev 339
+
+ * lib/rpa/localmetadata.rb, lib/rpa/port.rb, lib/rpa/util.rb, lib/rpa/base.rb,
+  lib/rpa/packagestate.rb, lib/rpa/repositoryinfo.rb:
+    Refactoring: moved RPA::Port, RepositoryInfo, PackageState, FileOperations to
+    separate files.
+    Factored out the LocalInstallation's metadata registry functionality 
+    into RPA::LocalMetadata.
+
+2004-6-18 11:30 (+0200)  batsman  rev 334
+
+ * install.rb:
+    Use sync on $stdout to avoid apparent hangups in some win32 versions.
+
+2004-6-18 11:28 (+0200)  batsman  rev 333
+
+ * install.rb, lib/rpa/rpafrontend.rb, lib/rpa/defaults.rb:
+    Added RPA::RPABASE_VERSION. Use it when running 'rpa -v'.
+
+2004-6-18 11:23 (+0200)  batsman  rev 332
+
+ * lib/rpa/helper.rb:
+    Helper::Installrdoc: enabled RDoc/ri integration on win32. Issue a warning
+    instead of raising an exception if it fails.
+
+2004-6-18 10:23 (+0200)  batsman  rev 331
+
+ * lib/rpa/open-uri.rb, lib/rpa/base.rb:
+    Port#download: removed the cheap workaround for win32, bundle the open-uri
+    from CVS with the Tempfile fix instead.
+
+2004-6-17 20:27 (+0200)  batsman  rev 330
+
+ * lib/rpa/helper.rb:
+    Helper::InstallModules#run: fixed the path used when installing into Ruby's
+    site_ruby dir.
+
+2004-6-16 23:56 (+0200)  batsman  rev 322
+
+ * lib/rpa/helper.rb:
+    Installrdoc#run: Disable rdoc/ri on win32.
+
+2004-6-16 21:36 (+0200)  batsman  rev 319
+
+ * README.txt:
+    Moved for win32 users.
+
+2004-6-16 21:4 (+0200)  batsman  rev 318
+
+ * test/tc_all.rb:
+    Updated warning about the time the tests might take.
+
+2004-6-16 20:46 (+0200)  batsman  rev 316
+
+ * manifesto.txt, README.txt, LICENSE.txt, user_stories.txt, install.rb, THANKS,
+  implementation_notes.txt, rpa_helpers.txt, test/tc_Install.rb, test/tc_all.rb,
+  test/tc_Base.rb, test/tc_Config.rb, test/tc_Classification.rb,
+  test/README.coverage, test/tc_Package.rb, TODO, lib/rpa.rb, lib/rpa/helper.rb,
+  lib/rpa/adminfrontend.rb, lib/rpa/package.rb, lib/rpa/base.rb,
+  lib/rpa/frontend.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb,
+  lib/rpa/classification.rb, lib/rpa/transaction.rb, lib/rpa/config.rb,
+  lib/rpa/defaults.rb, bin/rpa-buildrepos.rb, bin/rpaadmin, bin/rpa:
+    Moved.
+
+2004-6-14 13:43 (+0200)  batsman  rev 313
+
+ * lib/rpa/base.rb:
+    RepositoryInfo: use the bogorepos in rpa-base.rubyforge.org/ports.
+
+2004-6-8 0:4 (+0200)  batsman  rev 307
+
+ * THANKS:
+    Updated.
+
+2004-6-7 23:50 (+0200)  batsman  rev 306
+
+ * lib/rpa/install.rb:
+    Uninstaller#same_md5: fixed win32 binary flag bug.
+
+2004-6-2 16:7 (+0200)  batsman  rev 302
+
+ * README.txt:
+    Fixed typos.
+
+2004-6-1 14:49 (+0200)  batsman  rev 301
+
+ * lib/rpa/helper.rb:
+    Installrdoc#run: correct messages (RDoc HTML & Ri data files swapped).
+
+2004-5-31 20:30 (+0200)  batsman  rev 295
+
+ * README.txt:
+    Added a note for Debian users.
+
+2004-5-31 20:26 (+0200)  batsman  rev 294
+
+ * README.txt:
+    Minor updates.
+
+2004-5-31 20:15 (+0200)  batsman  rev 293
+
+ * README.txt:
+    Updated with more usage info, overview, etc.
+
+2004-5-31 19:14 (+0200)  batsman  rev 292
+
+ * test/tc_all.rb:
+    Display info about the syck bug when running the unit tests.
+
+2004-5-31 18:44 (+0200)  batsman  rev 291
+
+ * manifesto.txt:
+    Small clarification.
+
+2004-5-31 18:36 (+0200)  batsman  rev 290
+
+ * lib/rpa/helper.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    Implemented the --force option (force install in case of file conflicts).
+
+2004-5-31 18:31 (+0200)  batsman  rev 289
+
+ * THANKS:
+    Added.
+
+2004-5-28 15:2 (+0200)  batsman  rev 288
+
+ * lib/rpa/helper.rb:
+    Installextensions, Installmodules: install to the regular Ruby dirs too.
+    InstallStuffBase: refactoring to allow the former.
+
+2004-5-28 14:32 (+0200)  batsman  rev 283
+
+ * lib/rpa/install.rb:
+    Uninstaller#same_md5: fixed strange bug in the digest calculation.
+
+2004-5-27 16:4 (+0200)  batsman  rev 282
+
+ * lib/rpa/install.rb:
+    Uninstaller: don't remove locally modified files.
+
+2004-5-26 10:11 (+0200)  batsman  rev 278
+
+ * lib/rpa/base.rb:
+    LocalInstallation#force_install_pkg_impl: fixed stupid bug in the msg sent to
+    stdout.
+
+2004-5-20 17:21 (+0200)  batsman  rev 274
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: differentiate between lightweight and normal
+    transactions in the stdout output.
+
+2004-5-20 16:5 (+0200)  batsman  rev 268
+
+ * lib/rpa/rpafrontend.rb:
+    Fixed the command line help.
+
+2004-5-20 0:3 (+0200)  batsman  rev 267
+
+ * lib/rpa/config.rb:
+    Make rpa noisier by default.
+
+2004-5-19 23:5 (+0200)  batsman  rev 264
+
+ * install.rb:
+    Fix shebang lines.
+
+2004-5-19 22:49 (+0200)  batsman  rev 263
+
+ * install.rb:
+    Fixed bug in bin/ installation.
+
+2004-5-19 22:43 (+0200)  batsman  rev 262
+
+ * lib/rpa/helper.rb:
+    Installrdoc#run: see if we should use rdoc1.8 (Debian-specific).
+
+2004-5-19 22:40 (+0200)  batsman  rev 261
+
+ * test/tc_Base.rb:
+    Use defined? Rcov instead of defined? Rcov::__COVERAGE which would fail on the
+    latest 1.9CVS.
+
+2004-5-19 22:31 (+0200)  batsman  rev 260
+
+ * install.rb:
+    Ask where to install the stuff in bin/.
+
+2004-5-19 12:12 (+0200)  batsman  rev 259
+
+ * implementation_notes.txt, rpa_helpers.txt:
+    Updated the implementation notes.
+
+2004-5-19 11:53 (+0200)  batsman  rev 258
+
+ * user_stories.txt:
+    Updated user story list.
+
+2004-5-19 11:41 (+0200)  batsman  rev 257
+
+ * test/tc_Install.rb, lib/rpa/helper.rb, lib/rpa/install.rb:
+    More information is shown for high verbosity levels.
+
+2004-5-18 15:8 (+0200)  batsman  rev 252
+
+ * lib/rpa/rpafrontend.rb:
+    Cosmetic changes in the command line frontend.
+
+2004-5-18 12:45 (+0200)  batsman  rev 251
+
+ * test/tc_Base.rb, lib/rpa/base.rb, bin/rpa:
+    RPA::LocalInstallation, etc: use coarse locking when modifying the
+    local installation.
+
+2004-5-18 1:21 (+0200)  batsman  rev 250
+
+ * lib/rpa/helper.rb:
+    Added ::Config::CONFIG['EXEEXT'] to the ruby path under win32.
+
+2004-5-18 1:5 (+0200)  batsman  rev 249
+
+ * lib/rpa/helper.rb:
+    Helper::Installrdoc#run: another attempt to make it work on win32.
+
+2004-5-18 0:42 (+0200)  batsman  rev 248
+
+ * lib/rpa/helper.rb:
+    Helper::Installrdoc: try harder to make it work on win32.
+
+2004-5-18 0:31 (+0200)  batsman  rev 247
+
+ * lib/rpa/helper.rb:
+    Helper::Installrdocs: try to make it work on win32.
+
+2004-5-17 20:36 (+0200)  batsman  rev 246
+
+ * lib/rpa/base.rb:
+    Added a cheap progress bar to Port#download.
+
+2004-5-17 20:35 (+0200)  batsman  rev 245
+
+ * lib/rpa/rpafrontend.rb:
+    Minor correction in the command line help.
+
+2004-5-17 17:33 (+0200)  batsman  rev 244
+
+ * lib/rpa/helper.rb:
+    Helper::Installrdoc#run, HelperBase#make, HelperBase#extconf: raise an
+    exception if the external command fails.
+
+2004-5-17 11:16 (+0200)  batsman  rev 243
+
+ * lib/rpa.rb:
+    Added a warning for win32 users.
+
+2004-5-16 12:46 (+0200)  batsman  rev 239
+
+ * lib/rpa/base.rb:
+    Port#download: workaround for the problem w/ open-uri on win32 (it uses
+    Tempfile, whose underlying file isn't opened in binary mode).
+
+2004-5-16 12:15 (+0200)  batsman  rev 238
+
+ * lib/rpa/rpafrontend.rb:
+    More predictable behavior of info & query commands.
+
+2004-5-15 14:0 (+0200)  batsman  rev 237
+
+ * test/tc_Package.rb:
+    More win32 fixes.
+
+2004-5-14 15:37 (+0200)  batsman  rev 236
+
+ * lib/rpa/package.rb:
+    TarInput#close: close the file (@io) too.
+
+2004-5-14 15:5 (+0200)  batsman  rev 235
+
+ * lib/rpa/package.rb, lib/rpa/install.rb, lib/rpa/transaction.rb:
+    More win32 fixes: take into account that win32 cannot seemingly open a
+    directory (i.e. open("c:/windows") wouldn't work).
+
+2004-5-13 14:27 (+0200)  batsman  rev 234
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::Installexecutables#install_file: bugfixes.
+
+2004-5-13 14:22 (+0200)  batsman  rev 233
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::Installexecutables#install_file: create .bat files on win32.
+
+2004-5-13 13:50 (+0200)  batsman  rev 232
+
+ * install.rb:
+    Create .bat files on install for win32.
+
+2004-5-13 12:5 (+0200)  batsman  rev 231
+
+ * lib/rpa/base.rb, lib/rpa/transaction.rb:
+    Further win32 fixes: all IO operations done in binary mode.
+
+2004-5-12 21:56 (+0200)  batsman  rev 230
+
+ * test/tc_Package.rb:
+    Dummy fix for 1.8.1 2003-12-25.
+
+2004-5-12 20:27 (+0200)  batsman  rev 229
+
+ * test/tc_Package.rb:
+    Use binary flag for win32...
+
+2004-5-12 20:16 (+0200)  batsman  rev 228
+
+ * lib/rpa/helper.rb, lib/rpa/package.rb, lib/rpa/base.rb, lib/rpa/transaction.rb:
+    Added the 'binary' flag to several File operations (needed for win32).
+
+2004-5-12 16:38 (+0200)  batsman  rev 227
+
+ * lib/rpa/base.rb:
+    Default to c:/temp for DOS too.
+
+2004-5-12 16:36 (+0200)  batsman  rev 226
+
+ * lib/rpa/base.rb:
+    Set the win32 default dir to c:/temp.
+
+2004-5-12 16:24 (+0200)  batsman  rev 225
+
+ * lib/rpa/base.rb:
+    Set the default tempdir to c:\temp on win32.
+
+2004-5-12 16:19 (+0200)  batsman  rev 223
+
+ * lib/rpa/base.rb:
+    RPA: set TEMP_DIR to c:\tmp (and create the dir if needed) if no ENV var is
+    set and we're on win32.
+
+2004-5-12 12:2 (+0200)  batsman  rev 222
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFrontend#parse: don't import options from RPA::Config automagically.
+    Most of the --with-* options make little sense now, because even
+    though they'd allow the user to install to non-default RPA "local
+    installations", the "require magic" (require 'rpa'; RPA.version = ... )
+    would only work with the default one. So we comment out that code until
+    a decision is taken on how non-default "local installations" should
+    work.
+
+2004-5-12 11:48 (+0200)  batsman  rev 221
+
+ * lib/rpa/rpafrontend.rb:
+    Added the 'check' command to the command line tool, allowing to see if the
+    files of an unpacked .rpa were modified/removed after installation.
+
+2004-5-12 11:47 (+0200)  batsman  rev 220
+
+ * lib/rpa/base.rb:
+    Implemented LocalInstallation#modified_files.
+
+2004-5-12 11:46 (+0200)  batsman  rev 219
+
+ * bin/rpa:
+    Rescue all exceptions unless --debug is used.
+
+2004-5-11 16:3 (+0200)  batsman  rev 218
+
+ * lib/rpa/helper.rb:
+    Buildextensions#build_extension: make distclean before building the extension.
+
+2004-5-9 18:10 (+0200)  batsman  rev 216
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::InstallStuffBase#copy_dir: don't throw away the dirname of the
+    file being copied when a destdir is specified.
+
+2004-5-9 10:33 (+0200)  batsman  rev 207
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::RunUnitTests: honor test_suite if specified.
+
+2004-5-9 10:32 (+0200)  batsman  rev 206
+
+ * lib/rpa/install.rb:
+    Added the test_suite metadata field.
+    Bugfix in the 'collect helpers magic'.
+
+2004-5-8 19:20 (+0200)  batsman  rev 196
+
+ * test/tc_Install.rb:
+    Fixed unit tests.
+
+2004-5-8 19:16 (+0200)  batsman  rev 195
+
+ * lib/rpa/install.rb:
+    RPA::Install::InstallerBase.run: provide extra info when --debug is used.
+    RPA::Install::InstallerBase task magic: if a task is overriden, the
+    newly defined task(s) is(are) inserted into the task array at the index
+    the old one was at.
+
+2004-5-8 19:11 (+0200)  batsman  rev 194
+
+ * lib/rpa/config.rb:
+    Config#[]: bugfix (false values in the hash would make it fail).
+
+2004-5-8 18:29 (+0200)  batsman  rev 193
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    --debug is now common to install.rb and the rpa frontend.
+    LocalInstallation#transaction: output extra info in debug mode when
+    something goes wrong.
+
+2004-5-8 17:24 (+0200)  batsman  rev 192
+
+ * lib/rpa/rpafrontend.rb:
+    RPAFrontend#parse, RPAFrontend#do_cmd: initialize the LocalInstallation in
+    do_cmd, only for the commands that require it (for instance, don't do it when
+    the help is to be displayed).
+
+2004-5-7 17:59 (+0200)  batsman  rev 191
+
+ * lib/rpa/base.rb:
+    LocalInstallation#force_install_pkg_impl: don't do conflict checks here
+    anymore.
+    PackageState#repack: minor cleanup.
+
+2004-5-7 15:4 (+0200)  batsman  rev 190
+
+ * test/tc_Base.rb, lib/rpa/helper.rb, lib/rpa/install.rb:
+    Fixed conflict checks: they are now performed before the package is unpacked,
+    in RPA::Helper::Checkconflicts.
+
+2004-5-7 12:23 (+0200)  batsman  rev 189
+
+ * lib/rpa/base.rb:
+    Some refactoring in PackageState#initialize.
+
+2004-4-30 19:27 (+0200)  batsman  rev 188
+
+ * lib/rpa/base.rb:
+    Fixed silly refactoring error.
+
+2004-4-30 19:21 (+0200)  batsman  rev 187
+
+ * implementation_notes.txt:
+    Updated.
+
+2004-4-24 12:52 (+0200)  batsman  rev 186
+
+ * lib/rpa/config.rb:
+    Removed old, dead code.
+
+2004-4-24 10:28 (+0200)  batsman  rev 185
+
+ * lib/rpa/base.rb:
+    Minor bugfix in Port#download.
+
+2004-4-23 16:5 (+0200)  batsman  rev 184
+
+ * test/tc_Base.rb:
+    Testing of RepositoryInfo.
+
+2004-4-23 12:5 (+0200)  batsman  rev 183
+
+ * test/tc_Base.rb, lib/rpa/base.rb:
+    Tests for RPA::Port.
+
+2004-4-23 11:24 (+0200)  batsman  rev 182
+
+ * test/tc_Base.rb:
+    Added tests for LocalInstallation#install.
+
+2004-4-23 11:22 (+0200)  batsman  rev 181
+
+ * lib/rpa/base.rb:
+    Minor refactoring, and bugfix in LocalInstallation#install.
+
+2004-4-18 13:48 (+0200)  batsman  rev 180
+
+ * test/tc_Base.rb:
+    Tests for LocalInstallation#apply_pending_rollbacks and
+    LocalInstallation#commit.
+
+2004-4-18 11:22 (+0200)  batsman  rev 179
+
+ * test/tc_Base.rb, lib/rpa/base.rb:
+    More tests, mostly from LocalInstallation#transaction.
+
+2004-4-18 10:38 (+0200)  batsman  rev 178
+
+ * lib/rpa/base.rb:
+    LocalInstallation#force_install_pkg_impl: check for conflicts with files
+    not managed by RPA.
+
+2004-4-6 20:37 (+0200)  batsman  rev 176
+
+ * lib/rpa/base.rb:
+    Comment cleaning.
+
+2004-4-6 11:17 (+0200)  batsman  rev 175
+
+ * TODO, lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Added RPA.cleanup, which removes the tempdir & is called in an END block
+    unless RPA.do_cleanup is set to false.
+
+2004-4-3 10:46 (+0200)  batsman  rev 173
+
+ * test/tc_Base.rb:
+    TC_LocalInstallation2#set_new_state: timeout should *not* raise a
+    StandardError (but a Timeout::Error).
+
+2004-4-3 0:16 (+0200)  batsman  rev 172
+
+ * lib/rpa/install.rb:
+    Fixed an insidious bug in Uninstaller.
+    Something like the following was used:
+      FileUtils.rm_r somefile  rescue nil
+    it turns out Timeout::Error exceptions somehow turned into StandardErrors and
+    were rescued by the above clause, so the Uninstaller would think everything's
+    OK when actually that file was not removed.
+    
+    The code needs to be examined carefully to eliminate such risks.
+
+2004-3-28 19:40 (+0200)  batsman  rev 171
+
+ * lib/rpa/helper.rb:
+    Installrdoc: Infer the location of rdoc using rbconfig.rb.
+
+2004-3-28 19:29 (+0200)  batsman  rev 170
+
+ * lib/rpa/helper.rb:
+    Installrdoc: RDoc's programmatic interface is broken, we work around
+    that by calling rdoc with system (ouch!).
+
+2004-3-28 16:57 (+0200)  batsman  rev 167
+
+ * test/tc_Base.rb, test/README.coverage:
+    Transformed rcov into a standalone tool.
+
+2004-3-28 14:39 (+0200)  batsman  rev 163
+
+ * lib/rpa/install.rb:
+    Extended the capabilities of the 'handler collector'. It is now possible to
+    remove a helper from the default task list, e.g.
+      skip_default Installdocs
+    Additionally, the default helper will be removed from the task list when
+    another one of the same class is specified (this means that adding a new
+    helper overrides the default definition).
+
+2004-3-28 14:34 (+0200)  batsman  rev 162
+
+ * lib/rpa/helper.rb:
+    Implemented InstallExamples.
+
+2004-3-28 14:34 (+0200)  batsman  rev 161
+
+ * lib/rpa/classification.rb:
+    Added categories.
+
+2004-3-28 12:41 (+0200)  batsman  rev 160
+
+ * lib/rpa/rpafrontend.rb:
+    Cleaner handling of exceptions (esp. Interrupts) during install/remove.
+    Apply pending rollbacks before exit.
+
+2004-3-28 11:43 (+0200)  batsman  rev 159
+
+ * test/tc_Package.rb, lib/rpa/package.rb:
+    Metadata in .rpa and .rps files is compressed now (metadata.gz).
+
+2004-3-28 1:31 (+0100)  batsman  rev 158
+
+ * test/tc_Base.rb:
+    Perform more iterations when calculating code coverage, lest we have no
+    rollbacks.
+
+2004-3-28 0:17 (+0100)  batsman  rev 157
+
+ * TODO:
+    Updated.
+
+2004-3-27 23:50 (+0100)  batsman  rev 154
+
+ * lib/rpa/helper.rb:
+    Fixshebangs: several bugfixes.
+
+2004-3-27 23:22 (+0100)  batsman  rev 153
+
+ * lib/rpa/helper.rb:
+    Fixshebangs: use 'ruby-prog' instead of 'rubypath'.
+    Added a generic "Task" helper.
+    Installrdoc: skip if none of the specified files/dirs exist.
+
+2004-3-27 23:20 (+0100)  batsman  rev 152
+
+ * lib/rpa/config.rb:
+    Saner default value for the 'ruby-prog' option.
+
+2004-3-27 23:20 (+0100)  batsman  rev 151
+
+ * lib/rpa/install.rb:
+    InstallerBase#helper_collector: propagate blocks too.
+
+2004-3-27 22:19 (+0100)  batsman  rev 150
+
+ * lib/rpa/helper.rb:
+    ri data files generation.
+
+2004-3-27 18:53 (+0100)  batsman  rev 149
+
+ * test/tc_Base.rb:
+    Fixed transaction tests.
+
+2004-3-27 17:2 (+0100)  batsman  rev 148
+
+ * install.rb, lib/rpa/base.rb:
+    Don't forget to define RPA::VERSION in rpa/defaults.rb and require that file.
+
+2004-3-27 16:52 (+0100)  batsman  rev 147
+
+ * user_stories.txt, install.rb:
+    Defaults are saved to rpa/defaults.rb on install.
+
+2004-3-27 16:52 (+0100)  batsman  rev 146
+
+ * lib/rpa/base.rb, lib/rpa/defaults.rb:
+    Moved RPA::VERSION to rpa/defaults.rb.
+
+2004-3-27 16:21 (+0100)  batsman  rev 145
+
+ * lib/rpa.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb, lib/rpa/defaults.rb:
+    Default path information is taken from rpa/defaults. Therefore, the values
+    used in rpa.rb (management of $:) and config.rb (default values used by the
+    command-line tools, etc) are consistent now.
+
+2004-3-26 20:4 (+0100)  batsman  rev 144
+
+ * test/tc_Install.rb, test/tc_Base.rb, test/tc_Config.rb, lib/rpa/base.rb,
+  lib/rpa/config.rb:
+    More unit testing...
+
+2004-3-26 12:33 (+0100)  batsman  rev 143
+
+ * test/tc_Package.rb:
+    Forgot this in the last ci: more testing.
+
+2004-3-26 12:22 (+0100)  batsman  rev 142
+
+ * lib/rpa/package.rb:
+    TarWriter: split into name/prefix as specified by POSIX 1003.1.
+    More testing.
+
+2004-3-26 0:35 (+0100)  batsman  rev 141
+
+ * lib/rpa/package.rb:
+    TarReader#each_entry: invalidate the entry after it's been processed.
+
+2004-3-25 22:58 (+0100)  batsman  rev 140
+
+ * lib/rpa/base.rb:
+    LocalInstallation#run_installer: can use a 'lightweight' (metadata only)
+    transaction.
+    LocalInstallation#apply_pending_rollbacks: more info displayed.
+
+2004-3-25 21:36 (+0100)  batsman  rev 139
+
+ * README.txt:
+    Updated.
+
+2004-3-25 21:35 (+0100)  batsman  rev 138
+
+ * test/tc_Base.rb, lib/rpa/base.rb:
+    LocalInstallation#transaction: try to preserve the exception info.
+
+2004-3-25 20:51 (+0100)  batsman  rev 137
+
+ * test/tc_Package.rb, lib/rpa/package.rb, lib/rpa/base.rb:
+    Use the new file format.
+    LocalInstallation#force_install_pkg_impl: MD5 digest verification performed by
+    #extract_entry, so we only need one pass on the file.
+
+2004-3-25 12:10 (+0100)  batsman  rev 136
+
+ * test/tc_Package.rb, lib/rpa/package.rb:
+    Implemented Package::TarWriter#add_file.
+
+2004-3-24 12:2 (+0100)  batsman  rev 131
+
+ * test/tc_Package.rb, lib/rpa/package.rb:
+    Implemented Package::TarReader.
+
+2004-3-24 1:26 (+0100)  batsman  rev 129
+
+ * test/tc_Package.rb:
+    Added a test case for the (yet to be written) RPA::Package::TarReader.
+
+2004-3-23 19:19 (+0100)  batsman  rev 127
+
+ * test/tc_Package.rb:
+    More assertions.
+
+2004-3-23 19:19 (+0100)  batsman  rev 126
+
+ * lib/rpa/package.rb:
+    Bugfixes in TarHeader and TarWriter.
+
+2004-3-23 18:20 (+0100)  batsman  rev 124
+
+ * test/tc_Package.rb, lib/rpa/package.rb:
+    Implemented Package::TarWriter and Package::TarHeader.
+    TDD rules!
+
+2004-3-22 12:10 (+0100)  batsman  rev 122
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    LocalInstallation#register_metadata: fixed stupid bug that would cause a port
+    to be repeated in 'installed'.
+    LocalInstallation#gc_unneeded_ports: fixed.
+    RPAFrontend#remove: call LocalInstallation#gc_unneeded_ports after removing.
+
+2004-3-22 11:29 (+0100)  batsman  rev 121
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb:
+    LocalInstallation#transaction: the corresponding journal entry isn't removed
+    right after the transaction is complete -- this is wrong if it's a
+    subtransaction, and there's no way to know atm. As a nice side effect, 
+    rpa install A B C and rpa remove A B C either install/remove all of A, B and
+    C, or leave the system in the same state it was before.
+    Added LocalInstallation#commit which must be called when *all* changes to the
+    local installation are completed OK.
+
+2004-3-21 23:17 (+0100)  batsman  rev 120
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: don't remove the snapshot info until the
+    entry is removed from the journal.
+
+2004-3-21 22:20 (+0100)  batsman  rev 119
+
+ * test/tc_Base.rb, test/README.coverage:
+    Added a source line coverage generator.
+
+2004-3-21 22:12 (+0100)  batsman  rev 118
+
+ * test/tc_Base.rb:
+    Specify the number of iterations with TC_LocalInstallation2::ITERATIONS.
+
+2004-3-20 0:56 (+0100)  batsman  rev 117
+
+ * lib/rpa/base.rb:
+    Propagate @config to Port#initialize in all callers. 
+    Fixed a bug related to lost of backtrace data in exceptions, and a
+    NameError in LocalInstallation#uninstall_impl.
+
+2004-3-19 19:37 (+0100)  kapheine  rev 116
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    Most of rpa-base now honors verbose. At the moment, verbose 0 should print
+    nothing. Verbose 1 should print general messages, and verbose 2 will have a
+    little more detail. The exception to this is anything in Ports because it
+    does not have access to @config. This should probably be addressed somehow,
+    if possible.
+
+2004-3-19 17:11 (+0100)  batsman  rev 115
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: make the initial write to the journal
+    atomic, as it should always have been (otherwise we could lose previous
+    transaction info).
+                      
+
+2004-3-19 12:47 (+0100)  batsman  rev 114
+
+ * lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    Removed --verbose from RPAFrontend, it is now taken care of by RPA::Config (so
+    it will work with ruby install.rb too).
+
+2004-3-19 12:31 (+0100)  batsman  rev 113
+
+ * lib/rpa/base.rb:
+    RPA::PackageState#initialize: the .rpa file and its parent dir are
+    fsynced.
+
+2004-3-19 0:21 (+0100)  batsman  rev 112
+
+ * lib/rpa/package.rb, lib/rpa/base.rb, lib/rpa/install.rb,
+  lib/rpa/transaction.rb:
+    (un)installs are believed to be fully atomic now.
+    Use proper atomic writes for the key primitive operations (register/remove
+    metadata, update the journal on rollback and successful operation).
+    Intermediate file/dir operations are fsynced too.
+
+2004-3-18 21:24 (+0100)  batsman  rev 110
+
+ * lib/rpa.rb:
+    Fixed the sanity check in RPA.version=.
+
+2004-3-18 21:23 (+0100)  batsman  rev 109
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::RunUnitTests: chdir to the test/port directory while running the
+    tests.
+
+2004-3-18 21:21 (+0100)  batsman  rev 108
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: don't lose the backtrace info when re-raising
+    the exception.
+    Fixed typo in LocalInstallation#register_as_wanted.
+
+2004-3-17 21:30 (+0100)  batsman  rev 107
+
+ * lib/rpa/base.rb:
+    LocalInstallation#install: Use 'lightweight' transactions when calling
+    register_as_wanted.
+    Added LocalInstallation#gc_unneeded_ports.
+
+2004-3-17 11:20 (+0100)  batsman  rev 106
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/install.rb:
+    Removed the 'fakerevdep' hack, it was buggy anyway.
+    The 'wanted' field is set to true when a port is explicitly requested, we'll
+    eventually do a sort of mark&sweep GC to remove unneeded ports.
+
+2004-3-17 11:16 (+0100)  batsman  rev 105
+
+ * test/tc_Base.rb:
+    Fixed tests.
+
+2004-3-16 14:31 (+0100)  batsman  rev 104
+
+ * lib/rpa/base.rb:
+    RPA::PackageState now supports 'lightweight states' where only the metadata is
+    saved.
+
+2004-3-16 12:22 (+0100)  batsman  rev 103
+
+ * lib/rpa/config.rb:
+    RPA::Config: added --configfile (exported as --with-configfile).
+
+2004-3-16 12:20 (+0100)  batsman  rev 102
+
+ * lib/rpa/base.rb:
+    Define RPA::VERSION before requiring other files.
+
+2004-3-16 11:33 (+0100)  batsman  rev 101
+
+ * lib/rpa/base.rb, lib/rpa/config.rb:
+    RPA::LocalInstallation.instance and RPA::RepositoryInfo.instance only use the
+    'determinant part' of the config.
+
+2004-3-16 11:32 (+0100)  batsman  rev 100
+
+ * TODO:
+    Updated.
+
+2004-3-16 11:22 (+0100)  batsman  rev 99
+
+ * lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    RPA::Config.new: The "exported name" for an option is specified in def_param.
+
+2004-3-16 11:14 (+0100)  batsman  rev 98
+
+ * lib/rpa/base.rb, lib/rpa/config.rb:
+    Moved RPA::Config from rpa/base.rb to rpa/config.rb.
+
+2004-3-15 18:43 (+0100)  batsman  rev 97
+
+ * install.rb:
+    Don't forget to install bin/rpa and bin/rpaadmin too.
+
+2004-3-15 18:40 (+0100)  batsman  rev 96
+
+ * README.txt, bin/rpaadmin, bin/rpa:
+    Moved bin/rpa.rb to bin/rpa and rpaadmin.rb to rpaadmin.
+
+2004-3-15 17:49 (+0100)  batsman  rev 95
+
+ * lib/rpa/rpafrontend.rb:
+    Remove RPA::TEMP_DIR after install and remove unless --debug is specified.
+
+2004-3-15 16:47 (+0100)  batsman  rev 94
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb:
+    Implemented command line parsing in RPA::Config.new(argv).
+    Options in RPA::Config are mapped to options in RPA::RPAFrontend, so that
+    --prefix becomes --with-prefix, etc.
+
+2004-3-15 10:35 (+0100)  batsman  rev 93
+
+ * lib/rpa/base.rb:
+    PackageState#initialize: don't bomb when a file in meta["files"] is no longer
+    there.
+
+2004-3-15 1:29 (+0100)  kapheine  rev 92
+
+ * lib/rpa/rpafrontend.rb:
+    rpa query [blah] is now a shortcut for query --name=[blah]
+    The -x option has been removed and is now the default. Specify
+    -s for the short version.
+
+2004-3-15 0:36 (+0100)  kapheine  rev 91
+
+ * LICENSE.txt, lib/rpa/adminfrontend.rb, lib/rpa/frontend.rb,
+  lib/rpa/rpafrontend.rb, bin/rpaadmin, bin/rpa:
+    Added my licensing info.
+
+2004-3-14 23:58 (+0100)  kapheine  rev 90
+
+ * lib/rpa/adminfrontend.rb, lib/rpa/frontend.rb, lib/rpa/rpafrontend.rb,
+  bin/rpaadmin, bin/rpa:
+    Created general Frontend class. Added rpaadmin tool.
+
+2004-3-14 19:44 (+0100)  kapheine  rev 89
+
+ * lib/rpa/rpafrontend.rb:
+    Added 'help' command.
+
+2004-3-14 17:7 (+0100)  batsman  rev 88
+
+ * lib/rpa/rpafrontend.rb:
+    Use YAML when displaying port info if eval-display was specified.
+
+2004-3-14 17:0 (+0100)  batsman  rev 87
+
+ * lib/rpa/rpafrontend.rb:
+    s/package/port/g for consistency with our terminology.
+    Sort lists (list, query, info) before displaying.
+    Display list of installed ports if a batch install fails.
+
+2004-3-14 16:45 (+0100)  batsman  rev 85
+
+ * lib/rpa/rpafrontend.rb:
+    Implemented rpa.rb list and rpa.rb info.
+
+2004-3-14 16:26 (+0100)  batsman  rev 84
+
+ * lib/rpa/base.rb:
+    Added LocalInstallation#installed_ports.
+
+2004-3-14 13:16 (+0100)  batsman  rev 83
+
+ * implementation_notes.txt, rpa_helpers.txt, lib/rpa/helper.rb,
+  lib/rpa/install.rb:
+    Added RPA::Helper::Installexecutables.
+
+2004-3-14 11:23 (+0100)  batsman  rev 81
+
+ * lib/rpa/rpafrontend.rb:
+    Slightly better pretty-printing of query results.
+
+2004-3-14 11:2 (+0100)  batsman  rev 80
+
+ * lib/rpa/rpafrontend.rb:
+    Install and query now determine when the repository has never
+    been fetched and tell the user to run 'update'.
+    Try to pretty-print the results of rpa.rb query.
+    
+
+2004-3-14 10:10 (+0100)  batsman  rev 79
+
+ * LICENSE.txt:
+    Protect the email address (spambots...).
+
+2004-3-14 3:21 (+0100)  kapheine  rev 78
+
+ * lib/rpa/rpafrontend.rb:
+    --requires and --classification now allow list format.
+
+2004-3-14 2:34 (+0100)  kapheine  rev 77
+
+ * lib/rpa/rpafrontend.rb:
+    Fixed command listing, and a few small tweaks.
+
+2004-3-14 1:48 (+0100)  kapheine  rev 76
+
+ * lib/rpa/rpafrontend.rb:
+    Small bug where extended display was being used when it shouldn't be.
+
+2004-3-14 1:45 (+0100)  kapheine  rev 75
+
+ * lib/rpa/rpafrontend.rb, bin/rpa:
+    Added Frontend interface for installing, removing, etc
+
+2004-3-13 23:17 (+0100)  kapheine  rev 74
+
+ * TODO:
+    Added verbosity task.
+
+2004-3-13 23:0 (+0100)  batsman  rev 73
+
+ * lib/rpa.rb:
+    Use Config::CONFIG["rubylibdir"] instead of __FILE__ to locate the base dir.
+
+2004-3-13 19:44 (+0100)  batsman  rev 72
+
+ * lib/rpa/base.rb:
+    Added RDoc docs.
+
+2004-3-13 19:19 (+0100)  batsman  rev 71
+
+ * lib/rpa/base.rb:
+    RPA::PackageState#initialize: md5sums are computed when repacking.
+
+2004-3-13 10:17 (+0100)  batsman  rev 70
+
+ * test/tc_Base.rb:
+    Refactoring, new assertions.
+
+2004-3-12 21:58 (+0100)  batsman  rev 69
+
+ * test/tc_Base.rb:
+    Testing transactions...
+
+2004-3-12 21:58 (+0100)  batsman  rev 68
+
+ * test/tc_Install.rb:
+    Refactored.
+
+2004-3-12 21:52 (+0100)  batsman  rev 67
+
+ * lib/rpa/base.rb, lib/rpa/install.rb:
+    RPA::LocalInstallation#remove_metadata: remove the pkgname from 'installed'
+    before wiping out the info file (so that if it's interrupted in the middle the
+    state is still consistent).
+
+2004-3-12 12:25 (+0100)  batsman  rev 66
+
+ * test/tc_Classification.rb:
+    Added test cases for RPA::Classification.
+
+2004-3-12 12:23 (+0100)  batsman  rev 65
+
+ * lib/rpa/classification.rb:
+    Bugfix in RPA::Classification::Category#add. yay unit testing!
+
+2004-3-12 11:2 (+0100)  batsman  rev 64
+
+ * LICENSE.txt, lib/rpa.rb, lib/rpa/helper.rb, lib/rpa/package.rb,
+  lib/rpa/base.rb, lib/rpa/install.rb, lib/rpa/classification.rb:
+    Added licensing info.
+
+2004-3-10 14:12 (+0100)  batsman  rev 63
+
+ * lib/rpa/base.rb:
+    LocalInstallation#apply_pending_rollbacks: remove also dirs under rollback/.
+
+2004-3-8 21:18 (+0100)  batsman  rev 62
+
+ * lib/rpa/base.rb:
+    Fixed typo in LocalInstallation#apply_pending_rollbacks.
+
+2004-3-8 21:16 (+0100)  batsman  rev 61
+
+ * lib/rpa/helper.rb:
+    Installrdoc: ignore RDoc's crap on $stderr.
+
+2004-3-8 18:2 (+0100)  batsman  rev 60
+
+ * lib/rpa/base.rb:
+    LocalInstallation#apply_pending_rollbacks: remove garbage in rollback/ after
+    getting to a clean state.
+
+2004-3-8 17:10 (+0100)  batsman  rev 59
+
+ * lib/rpa/base.rb:
+    PackageState#recover renamed to PackageState#restore.
+
+2004-3-8 17:4 (+0100)  batsman  rev 58
+
+ * lib/rpa/base.rb:
+    Bugfix: endless loop when using rpa-rollback.rb (PackageState#recover).
+    LocalInstallation#retrieve_metadata and installed_files only consider packages
+    listed in 'installed' (not just info/ as before).
+
+2004-3-8 16:30 (+0100)  batsman  rev 57
+
+ * lib/rpa/base.rb:
+    Refactored LocalInstallation#uninstall.
+    Now #uninstall is transacted too (a package is either removed or left as
+    before).
+
+2004-3-8 12:59 (+0100)  batsman  rev 56
+
+ * lib/rpa/base.rb:
+    Further bugfixes in the transaction code.
+
+2004-3-8 11:50 (+0100)  batsman  rev 54
+
+ * lib/rpa/base.rb, lib/rpa/install.rb:
+    Implemented LocalInstallation#apply_pending_rollbacks.
+    Added bin/rpa-rollback.rb.
+
+2004-3-8 11:36 (+0100)  batsman  rev 53
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb, lib/rpa/install.rb:
+    Now only LocalInstallation#force_install_package is run as a transaction.
+    All external references to transaction removed.
+    RPA::Helper::Extractpkg uses
+    LocalInstallation#force_transacted_install_package.
+
+2004-3-8 10:55 (+0100)  batsman  rev 52
+
+ * lib/rpa/base.rb:
+    A PackageState must hold the new_metadata in order for the snapshot to be
+    complete (otherwise we'd be unable to remove partially unpacked packages).
+
+2004-3-8 10:40 (+0100)  batsman  rev 51
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: propagate the exception that caused the
+    transaction to fail.
+
+2004-3-8 10:34 (+0100)  batsman  rev 50
+
+ * lib/rpa/base.rb, lib/rpa/install.rb:
+    Fixed a couple bugs in the transaction code.
+    RPA::Uninstaller#run now checks if the files it's about to remove are actually
+    'owned' by the package that's being wiped out.
+
+2004-3-8 9:56 (+0100)  batsman  rev 49
+
+ * lib/rpa/base.rb:
+    Minor performance-related fix.
+
+2004-3-7 20:36 (+0100)  batsman  rev 48
+
+ * TODO:
+    Added.
+
+2004-3-7 20:27 (+0100)  batsman  rev 47
+
+ * lib/rpa/base.rb:
+    Added PackageState#cleanup and call it if the installation completes so that
+    the snapshot .rpa doesn't stay around.
+
+2004-3-7 20:15 (+0100)  batsman  rev 46
+
+ * README.txt:
+    Fixed typo.
+
+2004-3-7 20:7 (+0100)  batsman  rev 44
+
+ * implementation_notes.txt, test/tc_Install.rb, lib/rpa/helper.rb,
+  lib/rpa/install.rb, bin/rpa-buildrepos.rb:
+    Renamed RPA::Install.use_at_exit to RPA::Install.auto_install. The fact that
+    we use at_exit is an implementation issue that should be hidden.
+
+2004-3-7 19:26 (+0100)  batsman  rev 43
+
+ * lib/rpa/helper.rb, lib/rpa/base.rb:
+    Major refactoring: (rpa/helper.rb) Extractpkg moved most code from
+    Extractpkg to LocalInstallation#force_install_package.
+    Added RPA::PackageState which takes a snapshot of a package.
+    Package upgrades are transacted now. 
+    
+
+2004-3-7 13:6 (+0100)  batsman  rev 42
+
+ * user_stories.txt:
+    Updated user stories.
+
+2004-3-7 13:3 (+0100)  batsman  rev 41
+
+ * lib/rpa/base.rb:
+    Refactored LocalInstallation#transaction.
+
+2004-3-7 11:45 (+0100)  batsman  rev 40
+
+ * test/tc_Install.rb:
+    Fixed tests.
+
+2004-3-7 11:42 (+0100)  batsman  rev 39
+
+ * lib/rpa/base.rb:
+    LocalInstallation#transaction: fixed the SIGINT handler.
+
+2004-3-7 11:41 (+0100)  batsman  rev 38
+
+ * lib/rpa/helper.rb:
+    (Extractpkg#run) Don't use LocalInstallation#transaction anymore
+    (this is taken care of by whatever's running the installer).
+    Use '-q' in Installrdoc.
+
+2004-3-7 10:33 (+0100)  batsman  rev 37
+
+ * lib/rpa/helper.rb:
+    Implemented Installrdoc.
+    InstallStuffBase#default_srcdir and InstallStuffBase#default_base_destdir
+    now call the corresponding singleton methods of InstallStuffBase.
+
+2004-3-7 10:30 (+0100)  batsman  rev 36
+
+ * lib/rpa/base.rb:
+    (Port#download) Remove 'file://' from URLs.
+
+2004-3-7 9:52 (+0100)  batsman  rev 35
+
+ * lib/rpa/install.rb:
+    (InstallerBase) Added the 'description' field.
+    Now metadata as a whole is validated in InstallerBase#run.
+
+2004-3-6 22:50 (+0100)  batsman  rev 33
+
+ * lib/rpa/base.rb:
+    Use #transaction in LocalInstallation#install.
+
+2004-3-6 22:43 (+0100)  batsman  rev 32
+
+ * lib/rpa/install.rb:
+    (RPA::Install::StandaloneInheritanceMagic#inherited) Use
+    LocalInstallation#transaction in the at_exit block, too.
+            
+
+2004-3-6 22:30 (+0100)  batsman  rev 31
+
+ * lib/rpa/helper.rb, lib/rpa/install.rb:
+    Implemented RPA::Helper::RunUnitTests. Added that helper to the default helper
+    lists.
+
+2004-3-6 22:27 (+0100)  batsman  rev 30
+
+ * lib/rpa.rb:
+    Bugfix: RPA is a module, not a class.
+
+2004-3-6 21:4 (+0100)  batsman  rev 28
+
+ * lib/rpa/helper.rb:
+    RPA::Helper::Extractpkg verifies the MD5 digest of files when unpacking.
+    Installation is not performed if it differs.
+
+2004-3-6 12:23 (+0100)  batsman  rev 26
+
+ * lib/rpa/helper.rb, lib/rpa/install.rb:
+    Bugfix in InstallStuffBase: handle [files] correctly now.
+    Implemented InstallDocs as a subclass of InstallStuffBase.
+    Reordered the default helpers in the base installers (RPA::Install::).
+
+2004-3-6 11:57 (+0100)  batsman  rev 25
+
+ * lib/rpa/helper.rb:
+    Implemented Installtests as a subclass of InstallStuffBase.
+
+2004-3-6 11:39 (+0100)  batsman  rev 24
+
+ * lib/rpa/helper.rb:
+    Refactoring: moved most of InstallModules inside InstallStuffBase and make
+    most 'copying helpers' subclasses of the latter.
+
+2004-3-6 0:43 (+0100)  batsman  rev 23
+
+ * lib/rpa.rb:
+    Bugfix: forgot to add the part corresponding to RUBY_VERSION to the path.
+
+2004-3-5 23:36 (+0100)  batsman  rev 22
+
+ * user_stories.txt:
+    Updated list of user stories.
+
+2004-3-5 23:34 (+0100)  batsman  rev 21
+
+ * install.rb, lib/rpa.rb:
+    Added rpa.rb. This is included by RPA users to set $: to use modules from RPA.
+
+2004-3-5 11:57 (+0100)  batsman  rev 20
+
+ * lib/rpa/base.rb:
+    (RPA::RepositoryInfo#initialize) Create the base dir structure if not
+    existent.
+
+2004-3-5 11:52 (+0100)  batsman  rev 19
+
+ * lib/rpa/base.rb, lib/rpa/install.rb:
+    Abort installation if an exception is thrown in install.rb., i.e. avoid
+    running the at_exit block in that case.
+
+2004-3-5 0:30 (+0100)  batsman  rev 18
+
+ * lib/rpa/base.rb:
+    Avoid downloading .rps if they don't correspond to a newer version.
+
+2004-3-4 19:52 (+0100)  batsman  rev 17
+
+ * lib/rpa/base.rb:
+    Fixed bug in RepositoryInfo#initialize: data from available ports was not
+    recovered correctly.
+
+2004-3-4 19:45 (+0100)  batsman  rev 16
+
+ * lib/rpa/install.rb, lib/rpa/classification.rb:
+    Implemented RPA::Classification.
+    Data normalization is performed by the validation methods in InstallerBase.
+
+2004-3-4 17:30 (+0100)  batsman  rev 15
+
+ * implementation_notes.txt:
+    Fixed typo.
+
+2004-3-4 14:4 (+0100)  batsman  rev 14
+
+ * lib/rpa/base.rb:
+    Added a primitive query script.
+
+2004-3-4 13:40 (+0100)  batsman  rev 13
+
+ * lib/rpa/base.rb, bin/rpa-buildrepos.rb:
+    Refactoring: removed PortFetcher and RemotePortFetcher, introduced
+    RepositoryInfo and Port.
+    Added rpa-buildrepos.rb.
+
+2004-3-4 11:29 (+0100)  batsman  rev 12
+
+ * manifesto.txt, user_stories.txt, implementation_notes.txt, rpa_helpers.txt:
+    Added .txt extension.
+
+2004-3-4 11:27 (+0100)  batsman  rev 11
+
+ * lib/rpa/base.rb:
+    Bugfix: repeated pkgnames in 'installed'.
+
+2004-3-3 17:26 (+0100)  batsman  rev 10
+
+ * implementation_notes.txt, test/tc_Base.rb, lib/rpa/helper.rb, lib/rpa/base.rb,
+  lib/rpa/install.rb:
+    Renamed RPA::Repository to RPA::LocalInstallation.
+
+2004-3-3 0:22 (+0100)  batsman  rev 9
+
+ * implementation_notes.txt:
+    Added implementation_notes.
+
+2004-2-29 13:3 (+0100)  batsman  rev 7
+
+ * rpa_helpers.txt:
+    Updated list of rpa_helpers.
+
+2004-2-29 12:55 (+0100)  batsman  rev 6
+
+ * manifesto.txt, README.txt, user_stories.txt, install.rb, rpa_helpers.txt,
+  test/tc_Install.rb, test/tc_all.rb, test/tc_Base.rb, lib/rpa/helper.rb,
+  lib/rpa/package.rb, lib/rpa/base.rb, lib/rpa/install.rb,
+  lib/rpa/classification.rb:
+    Imported.
+

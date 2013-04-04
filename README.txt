@@ -69,7 +69,7 @@ Take a look at rpa's options by running
 
 You can take a look at the available ports with
   rpa update
-  rpa query -s
+  rpa query 
 
 Installing stuff
 -----------------
