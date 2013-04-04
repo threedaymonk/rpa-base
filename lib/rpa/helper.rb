@@ -14,7 +14,7 @@ module Helper
 IGNORE_DIRS = %w[CVS SCCS RCS CVS.adm .svn]
 # stolen from setup.rb
 mapping = { '.' => '\.', '$' => '\$', '#' => '\#', '*' => '.*' }
-IGNORE_FILES = %w[core RCSLOG tags TAGS .make.state .nse_depinfo 
+IGNORE_FILES = %w[core RCSLOG tags TAGS .make.state .nse_depinfo .arch-id
         #* .#* cvslog.* ,* .del-* *.olb *~ *.old *.bak *.BAK *.orig *.rej _$* *$
         *.org *.in .* ].map do |x|
             Regexp.new("\A" + x.gsub(/[\.\$\#\*]/){|c| mapping[c]} + "\z")
@@ -199,13 +199,21 @@ class Fixperms < HelperBase
             is_bin = /\Arpa\/#{@dest}\/bin\//.match(f)
             is_dir = file_class.dir?(f)
             mode = case
-            when is_dir || is_bin
+            when is_dir || is_bin || (broken_windows? && is_extension(f))
                 0755
             else
                 0644
             end
             @fileops.chmod mode, f
         end
+    end
+
+    def broken_windows?
+        ::Config::CONFIG["arch"] =~ /dos|win32|mingw|cygwin/i
+    end
+
+    def is_extension(name)
+        DLEXT.match name
     end
 end
 
@@ -442,6 +450,14 @@ class Installextensions < InstallStuffBase
     def self.default_base_destdir(config, installer)
         sitearchdir = ::Config::CONFIG["sitearchdir"]
         sitearchdir.gsub(/^#{::Config::CONFIG["prefix"]}/, "")
+        sitearchdir = ::Config::CONFIG["sitearchdir"]
+        prefs = ::Config::CONFIG["prefix"], config["prefix"]
+        prefs = prefs.sort_by{|x| x.size }
+        # try the longest first
+        unless sitearchdir.gsub!(/^#{Regexp.escape(prefs[1])}/, "")
+            sitearchdir.gsub!(/^#{Regexp.escape(prefs[0])}/, "")
+        end
+        sitearchdir
     end
 
     def file_selected? name
@@ -490,7 +506,7 @@ class Installmodules < InstallStuffBase
 end
 
 class Installrdoc < HelperBase
-    require 'rdoc/rdoc'
+    #require 'rdoc/rdoc'
     require 'stringio'
     require 'rbconfig'
     IS_BROKEN_WINDOWS = ::Config::CONFIG["arch"] =~ /msdos|win32|mingw/i

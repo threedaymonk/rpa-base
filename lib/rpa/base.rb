@@ -343,6 +343,54 @@ class LocalInstallation
         end
     end
 
+    # Installs the given set of .rpa packages. Almost the same as #install(),
+    # except that it tries to resolve deps using its fileset first. This lets
+    # us support systems that have no compiler if they have all their deps
+    # available locally.
+    def install_package_files(files)
+        do_install_package_file = lambda do |p, revdep|
+            meta = p.metadata
+            unless meta['platform'] == ::Config::CONFIG['arch']
+                raise RuntimeError, "Package #{p.filename} was built for another platform"
+            end
+            pkgfile = p.filename
+            if %r{\Afile://}.match(pkgfile) || !%r{\A[a-z]+://}.match(pkgfile) 
+                pkgfile = pkgfile.gsub(%r{\Afile://}, "")
+            else
+                tmpname = pkgfile.split(/\//).last || ""
+                destdir = File.join(RPA::TEMP_DIR, "#{tmpname}_i_f_p_#{Time.now.to_i}_#{rand(100000)}")
+                destfile = destdir + '.rpa'
+                RPA.fetch_file @config, pkgfile do |is|
+                    File.open(destfile, "wb") do |os|
+                        os.write(is.read(4096)) until is.eof?
+                    end
+                end
+                pkgfile = destfile
+            end
+            force_transacted_install_package pkgfile
+            unless revdep
+                transaction(meta, true){register_as_wanted meta['name']}
+            end
+        end
+
+        files.values.each do |p|
+            meta = p.metadata
+            if (deps = meta["requires"] || []).size == 0
+                transaction(meta, true) { do_install_package_file.call(p, nil) }
+            else
+                transaction(meta, true) do
+                    deps.each do |port|
+                      if files.has_key?(port)
+                        do_install_package_file.call(files[port], meta['name'])
+                      else
+                        install(port, meta['name'])
+                      end
+                    end
+                end
+            end
+        end
+    end
+
     # install from the given port, i.e. build the .rpa and install it
     def install_from_port(filename)
         #FIXME: maybe write build_from_port and use that?

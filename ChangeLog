@@ -1,3 +1,118 @@
+2004-11-15 21:47 (+0100)  batsman  rev 1124
+
+ * install.rb:
+    Rebranded as 0.2.3-1.
+
+2004-11-6 0:31 (+0100)  batsman  rev 1099
+
+ * install.rb:
+    Try to use the bundled code, instead of the system one.
+    This means that the new code will be used when installing from a tarball.
+
+2004-11-6 0:17 (+0100)  batsman  rev 1098
+
+ * install.rb, lib/rpa/config.rb:
+    RPA::OpenStruct: don't assume that new_ostruct_member is there.
+
+2004-11-5 17:53 (+0100)  batsman  rev 1095
+
+ * lib/rpa/rpafrontend.rb:
+    Minor clarifications in the help messages.
+
+2004-11-5 17:42 (+0100)  batsman  rev 1093
+
+ * README.txt, install.rb, bash_completion.sh:
+    Imported the shell completion script for bash.
+
+2004-11-5 17:31 (+0100)  batsman  rev 1092
+
+ * lib/rpa/config.rb:
+    Workaround for the OpenStruct commit in Ruby's CVS: OpenStruct objects
+    cannot be serialized anymore by default, because they acquire a
+    singleton class when a field is set.
+
+2004-11-5 17:19 (+0100)  batsman  rev 1091
+
+ * lib/rpa/helper.rb:
+    IGNORE_FILES: ignore .arch-id files.
+
+2004-10-28 13:21 (+0200)  ljb  rev 1051
+
+ * lib/rpa/base.rb:
+    lib/rpa/base.rb: turn on brain! always run do_install_package_file inside of a transaction block :|
+
+2004-10-28 13:17 (+0200)  ljb  rev 1050
+
+ * lib/rpa/base.rb:
+    lib/rpa/base.rb: move platform check to lambda, ensure that it always occurs for .rpa packages we're aware of
+
+2004-10-28 13:14 (+0200)  ljb  rev 1049
+
+ * lib/rpa/rpafrontend.rb:
+    lib/rpa/rpafrontend.rb: add fixme comment
+
+2004-10-28 13:12 (+0200)  ljb  rev 1048
+
+ * lib/rpa/base.rb, lib/rpa/rpafrontend.rb, lib/rpa/config.rb:
+    lib/rpa/rpafrontend.rb,lib/rpa/base.rb,lib/rpa/config.rb:
+      add support for installing .rpa directly. provides minimal protection against
+      installing the wrong package.
+
+2004-10-21 1:43 (+0200)  batsman  rev 1018
+
+ * install.rb, lib/rpa/install.rb, lib/rpa/defaults.rb:
+    Use ::Config::CONFIG['arch'] instead of ::Config::CONFIG['target'] for
+    Defaults::SO_DIR and the 'platform' field of the metadata.
+
+2004-10-12 19:11 (+0200)  batsman  rev 985
+
+ * install.rb, lib/rpa/base.rb:
+    LocalInstallation#get_port: raise an exception if it cannot be found.
+
+2004-10-11 20:43 (+0200)  batsman  rev 979
+
+ * install.rb, bin/rpa:
+    bin/rpa doesn't rescue the exceptions now.
+
+2004-10-11 17:35 (+0200)  batsman  rev 977
+
+ * install.rb, lib/rpa/helper.rb:
+    RPA::Helper::Fixperms: extensions must be 0755 under win32 or we'll get the
+    win32 error number five.
+
+2004-10-9 19:49 (+0200)  batsman  rev 936
+
+ * manifesto.txt, README.txt, LICENSE.txt, user_stories.txt, install.rb, THANKS,
+  implementation_notes.txt, rpa_helpers.txt, test/tc_Install.rb, test/tc_all.rb,
+  test/tc_Base.rb, test/tc_Config.rb, test/tc_Classification.rb,
+  test/README.coverage, test/tc_Package.rb, TODO, lib/rpa.rb,
+  lib/rpa/localmetadata.rb, lib/rpa/port.rb, lib/rpa/open-uri.rb,
+  lib/rpa/helper.rb, lib/rpa/adminfrontend.rb, lib/rpa/package.rb,
+  lib/rpa/packagecache.rb, lib/rpa/util.rb, lib/rpa/base.rb, lib/rpa/frontend.rb,
+  lib/rpa/rpafrontend.rb, lib/rpa/install.rb, lib/rpa/classification.rb,
+  lib/rpa/transaction.rb, lib/rpa/packagestate.rb, lib/rpa/config.rb,
+  lib/rpa/repositoryinfo.rb, lib/rpa/defaults.rb, bin/rpa-buildrepos.rb,
+  bin/rpaadmin, bin/rpa-buildport, bin/rpa:
+    0.2 (current stable) branch.
+
+2004-10-9 14:53 (+0200)  batsman  rev 935
+
+ * install.rb, lib/rpa/helper.rb:
+    RPA::Helper::Installextensions: bugfix: correct destination path.
+
+2004-10-9 11:45 (+0200)  batsman  rev 931
+
+ * install.rb, lib/rpa/repositoryinfo.rb:
+    LocalInstallation#update: replace the 'available' file atomically.
+
+2004-10-9 0:54 (+0200)  batsman  rev 928
+
+ * install.rb, lib/rpa/helper.rb, lib/rpa/repositoryinfo.rb:
+    RepositoryInfo#update: don't rescue the exception if there's a problem
+    downloading the info.
+    RPA::Helper::Installrdoc: don't require 'rdoc/rdoc' (unneeded, makes irb
+    angry).
+
 2004-9-29 10:40 (+0200)  batsman  rev 884
 
  * lib/rpa/rpafrontend.rb:

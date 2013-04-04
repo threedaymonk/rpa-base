@@ -20,6 +20,6 @@ module RPA
         RPA_BASE = fix_path.call File.join(::Config::CONFIG['libdir'], 'ruby', 
                                                "rpa#{RPA::VERSION}")
         SITELIBDIR = File.join(RPA_BASE, ::Config::CONFIG['ruby_version'])
-        SO_DIR = File.join(SITELIBDIR, ::Config::CONFIG["target"])
+        SO_DIR = File.join(SITELIBDIR, ::Config::CONFIG["arch"])
     end
 end

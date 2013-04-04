@@ -9,9 +9,20 @@ require 'rpa/base'
 
 module RPA
 
+require 'ostruct'
+class OpenStruct < ::OpenStruct
+    def marshal_dump
+        @table
+    end
+
+    def marshal_load(obj)
+        @table = obj
+        @table.each_key{|key| self.new_ostruct_member(key) } if respond_to? :new_ostruct_member
+    end
+end
+
 class Config
     require "rbconfig"
-    require 'ostruct'
 
     DETERMINANT_VALUES = %w[prefix rpa-base sitelibdir so-dir]
     VALUES = [] # the array will be appended to by def_param
@@ -72,7 +83,7 @@ class Config
     def_param("debug", "Debug mode", nil, "debug") { false }
     def_param("force", "Force installation despite file conflicts", nil,
               "force") { false }
-    def_param("build", "Only buils the .rpa packages.", nil,
+    def_param("build", "Only builds the .rpa packages.", nil,
               "build") { false }
     def_param("parallelize", "Parallelize operations.", nil,
               "parallelize") { false }

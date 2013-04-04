@@ -68,7 +68,7 @@ module Install
                     args = send(vmethod, *args)
                     #FIXME: full blown object?
                     @metadata ||= 
-                        {'platform' => ::Config::CONFIG['target'],
+                        {'platform' => ::Config::CONFIG['arch'],
                          'rpaversion' => RPA::VERSION, 
                          'date' => Time.new.rfc2822} 
                     @metadata[field.to_s] = args

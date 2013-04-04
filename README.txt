@@ -101,6 +101,14 @@ After installing a port with rpa-base, you can get its info using ri-rpa too:
   rpa install keyedlist
   ri-rpa --port keyedlist KeyedList
 
+Bash completion
+===============
+
+Just source bash_completion.sh (available in the documentation dir of
+rpa-base, that is typically $prefix/share/doc/rpa0.0/rpa-base) to get bash
+shell completion for the rpa command. Kudos to Brian Schröder and Nobu Nakada
+for coding it.
+
 Transactions
 ------------
 

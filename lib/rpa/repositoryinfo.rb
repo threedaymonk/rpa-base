@@ -6,6 +6,7 @@
 module RPA
 
 require 'rpa/util'
+require 'rpa/transaction'
 require 'time'
 
 # Represents the information on available packages.
@@ -63,14 +64,14 @@ class RepositoryInfo
                 end
                 # FIXME: what about repeated ports, etc?
             rescue Exception => e
-                p e
                 puts "Couldn't retrieve port info from #{src}." if verbose >= 2
+                raise
             end
         end
         newinfo = newinfo.sort_by{|port| port["metadata"]["name"] }
         @ports = newinfo.map{|x| Port.new(x["metadata"], x["url"], @config) }
         oldports = File.open(@cachefile){|f| YAML.load(f)} || [] rescue []
-        File.open(@cachefile, "wb") { |f| f.write newinfo.to_yaml }
+        Transaction.atomic_write(@cachefile, newinfo.to_yaml)
         return changes_since(oldports, newinfo, notify_since)
     ensure
         localinst.release_lock unless localinst.nil?

@@ -13,17 +13,17 @@ module RPA
 class RPAFrontend < Frontend
 
     COMMANDS = [
-        ['install', '[port|port.rps]...', 'Installs the given ports'],
-        ['remove', '[port]...', 'Removes the given ports'],
+        ['install', '<port|port.rps|pkg.rpa>...', 'Installs the given ports'],
+        ['remove', '<port>...', 'Removes the given ports'],
         ['dist-upgrade', '', 'Upgrades all ports'],
-        ['build', '[port]...', 'Builds the given ports'],
-        ['source', '[port]...', 'Download the specified ports'],
+        ['build', '<port>...', 'Builds the given ports'],
+        ['source', '<port>...', 'Download the specified ports'],
         ['query|search', '[port]...', 'Query the repository'],
         ['list', '', 'List currently installed ports'],
-        ['info', '[port]...', 'Gives info on installed ports'],
+        ['info', '<port>...', 'Gives info on installed ports'],
         ['update', '', 'Update repository data'],
         ['rollback', '', 'Recover from previous abort'],
-        ['check', '[port]...', 'Check status of the given ports'],
+        ['check', '<port>...', 'Check status of the given ports'],
         ['clean', '', 'Purges package and port caches.'],
         ['help', '', 'Displays help for commands']
     ]
@@ -277,8 +277,8 @@ class RPAFrontend < Frontend
             puts "  rpa install ri-rpa --verbose 5"
             puts "  rpa remove types"
             puts "  rpa query -x ri-rpa"
-            puts "  rpa query -e 'requires && requires.include?(\"types\")' -D name,url,requires"
-            puts "  rpa info types -D md5sums"
+            puts "  rpa query -x -e 'requires && requires.include?(\"types\")' -D name,url,requires"
+            puts "  rpa info types -x -D md5sums"
             puts "  rpa info -x ri-rpa"
         else
             $stderr.puts "Invalid command. See usage."
@@ -319,27 +319,46 @@ class RPAFrontend < Frontend
         previous_ports = @localinst.installed_ports
         begin
             cmd.each do |port| 
-                next if /\.rps\z/.match port
+                next if port =~ /\.rps\z/ || port =~ /\.rpa\z/
                 @localinst.build port
             end
             @localinst.acquire_lock
             # we must make sure we're in a clean state cause it was not done
             # when initialing the LocalInstallation
             @localinst.apply_pending_rollbacks
+
+            packagefiles = nil
+            packagefileent = nil
             cmd.each do |port|
                 if port =~ /\.rps\z/
                     # it's a .rps file
                     puts "  Installing from #{port}" unless @options.quiet
                     @localinst.install_from_port port
+                elsif port =~ /\.rpa\z/
+                    packagefiles ||= {}
+                    packagefileent ||= Struct.new(:filename, :metadata)
+                    meta = Package.open(port){|p| p.metadata}
+                    packagefiles[meta['name']] = packagefileent.new(port, meta)
                 else
                     puts "  Installing #{port}" unless @options.quiet
                     @localinst.install(port)
                 end
             end
+
+            # do this once we've seen all the .rpa packages. they're a special case,
+            # as we allow other command-line arguments to satisfy deps instead of
+            # immediately attempting to build and install the deps.
+
+            # FIXME: make this win32-only until we have a better notion of what
+            #        indicates the target of a package
+            if packagefiles && packagefiles.length > 0
+              @localinst.install_package_files(packagefiles)
+            end
+
         rescue => e
             $stderr.puts "Error: #{e} aborting"
             @localinst.apply_pending_rollbacks
-            raise if @options.debug
+            raise# if @options.debug
             exit 6
         end
         @localinst.commit

@@ -9,7 +9,7 @@ $get_defaults = false
 $rpa_defaults_text = nil
 begin
 require 'rpa/defaults'
-require 'rpa/install'
+#require 'rpa/install'
 puts "Defaults loaded..."
 rescue LoadError
     puts <<EOF
@@ -66,7 +66,7 @@ else # $rpa_base_get_defaults
     puts "Recovering defaults..."
     $rpa_defaults_text = <<EOF
 module RPA
-    RPABASE_VERSION = "0.2.2"
+    RPABASE_VERSION = "0.2.3"
     VERSION = "0.0"
     module Defaults
         PREFIX = #{RPA::Defaults::PREFIX.inspect}
@@ -78,16 +78,18 @@ end
 EOF
 end
 
+$:.unshift "./lib"
+
 require 'rpa/install'
 require 'rbconfig'
 class Install_rpa_base < RPA::Install::Application
     name "rpa-base"
-    version "0.2.2-1"
+    version "0.2.3-1"
     classification Application.Admin
     build do
         skip_default Installrdoc
         installdocs %w[README.txt LICENSE.txt THANKS TODO manifesto.txt
-            user_stories.txt]
+            user_stories.txt bash_completion.sh]
         task do 
             fname = File.join("rpa/tmp", @config["sitelibdir"], "rpa/defaults.rb")
             sitelibdir = ::Config::CONFIG["sitelibdir"]
