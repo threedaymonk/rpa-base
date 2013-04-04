@@ -1,0 +1,9 @@
+
+- more & better unit testing!!! (>90% coverage would be nice too)
+- refactor rpa/base.rb and document it, esp. LocalInstallation.
+- begin to think about the RPA policy
+- 90% done: throw away the scripts in bin/ and write real tools
+  (the equivalent of dpkg -s, apt-get (update|install|remove), an
+  über-apt-cache search and a way to rollback transactions that were not
+  completed due to a *crash*, a kind of apt-get -f install)
+- work through the missing user stories

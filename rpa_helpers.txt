@@ -1,0 +1,24 @@
+buildextensions         build extensions (extconf.rb & co)
+buildpkg		build package with temp dir + metadata
+checkconflicts          see if there's any file conflict before unpacking
+clean			clean package build dirs
+compress		compress files in doc, etc
+extractpkg              unpack the .rpa file
+fixperms		fix file permissions
+fixshebangs		fix shebang lines
+installchangelogs	install changelogs
+installdependencies     install deps
+installdocs		install docs
+installexamples		install examples
+installexecutables      install executables
+installextensions	install extensions
+installman		install and/or manpages
+installmetadata		install metadata into temp. subdir
+installmodules		.rb stuff
+installrdoc		generate & install rdoc API docs
+installtests		install unit tests
+md5sums			generate md5sums	
+moduledeps		calculate module dependencies
+rununittests            runs unit tests
+task                    arbitrary task
+testversion		test RPA version

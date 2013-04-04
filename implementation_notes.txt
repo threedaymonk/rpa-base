@@ -1,0 +1,113 @@
+
+
+General operation of the installer
+==================================
+
+it can be invoked in the 2 following ways:
+ * ruby install.rb  directly in the port directory. This will use at_exit to
+   trigger installation on program exit
+ * rpa install (or internal usage of LocalInstallation.install). The install.rb file
+   is loaded and the installer is invoked right away.
+
+When installing, a .rpa file corresponding to the port being installed
+is always created. It might not be visible if it is built in a temporary
+directory (when it doesn't correspond to a direct invocation of install.rb).
+The .rpa file is extracted by the Extractpkg helper (see below).
+
+A .rpa file is a tarball holding the following 2 files
+ * data.tar.gz: actual data, relative to $prefix/
+ * metadata(.gz): package metadata
+
+.rps files are used to distribute the ports; they have the same format as .rpa
+files for implementation convenience, although some parts (for instance
+metadata) might be unused.
+
+Installers & helpers
+====================
+
+Installers are little more than a means to define metadata and a container for
+tasks. The latter are specified using 'helpers'; the installers include a
+default list of helpers to invoke, but more can be specified in the
+install.rb. This allows to cope with "non-standard" directory structures by
+passing the appropriate arguments to the helpers.
+
+Whereas Minero Aoki's setup.rb required the .rb files meant to be
+installed to be in lib/, you could easily install a file in the top-level dir
+of the port using something like
+
+build { installmodules(["bla.rb"], "bla/")  }
+
+in install.rb.
+
+List of helpers (see rpa_helpers.txt too):
+
+buildextensions         build extensions (extconf.rb & co)
+buildpkg		build package with temp dir + metadata
+checkconflicts          see if there's any file conflict before unpacking
+clean			clean package build dirs
+compress		compress files in doc, etc
+extractpkg              unpack the .rpa file
+fixperms		fix file permissions
+fixshebangs		fix shebang lines
+installchangelogs	install changelogs
+installdependencies     install deps
+installdocs		install docs
+installexamples		install examples
+installexecutables      install executables
+installextensions	install extensions
+installman		install and/or manpages
+installmetadata		install metadata into temp. subdir
+installmodules		.rb stuff
+installrdoc		generate & install rdoc API docs
+installtests		install unit tests
+md5sums			generate md5sums	
+moduledeps		calculate module dependencies
+rununittests            runs unit tests
+task                    arbitrary task
+testversion		test RPA version
+
+
+Comments on the implementation
+==============================
+
+Installers are defined in rpa/install.rb. They are derived from InstallerBase
+which provides methods for basic validation of the metadata and includes
+(actually Object#extend) the StandaloneInheritanceMagic mix-in.
+Thanks to StandaloneInheritanceMagic, when one of the predefined installer
+classes is subclassed in a install.rb script, the subclass will be added to
+the @children array in RPA::Install if in 'auto mode'
+(RPA::Install.auto_install = false) or will be set for execution in an at_exit
+block.
+
+If RPA::Install.auto_install is true ('auto mode'), the installation was
+triggered by LocalInstallation#install (this could happen either if the rpa
+command was used or if the package was installed because the one whose
+install.rb was run depends on the former).
+
+"Collecting helpers"
+====================
+Inside install.rb, more tasks can be added to the default ones provided by the
+installer, using helpers. For instance
+
+build { installmodules(%w[bla.rb], "bla/")  }
+
+In order to make that work, a number of things are needed:
+
+what we want is allow several calls to "helper methods", which actually create 
+Helper objects and collect the helpers created into the internal arrays used
+by the installer to hold the tasks to be run. Several singleton methods are
+added to InstallerBase representing the different phases of the installation:
+
+ prebuild, build, install
+
+They will construct a 'helper collector' object (see
+InstallerBase.helper_collector), with a number of singleton methods
+corresponding to the available helpers, that will instantiate the helper
+objects and add them to the appropriate array.
+
+Metadata
+========
+Metadata is specified in install.rb files using singleton methods of
+InstallerBase. See RPA::Install::InstallerBase::FIELDS. For each of the fields
+defined in that constant, a singleton method that adds the field to @metadata
+and calls validate_field (if defined) is added to InstallerBase.

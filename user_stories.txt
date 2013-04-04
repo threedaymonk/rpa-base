@@ -1,0 +1,21 @@
+* Be able to install ruby files in a prefix
+* Be able to set prefix
+* Be able to use 'require "rpa"' to set search path
+* Be able to uninstall packages
+* Be able to handle requirements
+* Handle descriptions
+- Handle comments
+* Handle documentation
+* Handle examples
+* Handle auto-install (a la CPAN.pm)
+* Handle classification in various categories
+	* Verify that the classifications included exists
+* Handle category queries
+- Handle automatic generation of FreeBSD port
+- Handle automatic generation of a .deb package
+* Handle automatic running of tests
+* Handle "atomic" installs
+* Handle aborted installs
+* Handle tests not passing
+- Handle licenses
+* Be able to compile extensions

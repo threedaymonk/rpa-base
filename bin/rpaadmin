@@ -1,0 +1,9 @@
+#!/usr/bin/ruby
+#
+# Copyright (C) 2004 Zachary P. Landau
+# See LICENSE.txt for additional licensing information.
+#
+
+require 'rpa/adminfrontend'
+
+rpaadmin = RPA::AdminFrontend.new

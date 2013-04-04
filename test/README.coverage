@@ -1,0 +1,5 @@
+
+First install the rcov port, then run
+  rcov -I.. tc_all.rb
+
+

@@ -1,0 +1,101 @@
+
+The manifesto:
+
+The Ruby Production Archive
+---------------------------
+
+The goal of the Ruby Production Archive is to provide packages of Ruby
+libraries and programs in a form that allows production use.  We would rather
+provide a small number of high-quality packages than a large number of
+lower quality.
+
+As a such, we want to actively commit to the following for the packages 
+we provide:
+
+All packages shall be
+- Consistent with our documented standards.
+- Documented.
+- Stable enough for production use.
+- Kept available and with somewhere to send bugfixes.
+- Versioned (if applicable).
+- With an API we commit to over versions (if applicable).
+- Released after stringent release engineering standards.
+
+
+The annotated version of the manifesto:
+
+> The Ruby Production Archive
+> ---------------------------
+>
+> The goal of the Ruby Production Archive is to provide packages of Ruby
+> libraries and programs in a form that allows production use.  We would rather
+> provide a small number of high-quality packages than a large number of
+> lower quality.
+>
+> As a such, we want to actively commit to the following for the packages 
+> we provide:
+
+Note that we *want* to commit to.  We are not able to commit to all of these
+yet, and this should be noted on our website.  We should check off which of
+these we commit to as time passes.
+
+Note also *actively*: we won't just wait for ppl to satisfy the criteria we
+commit to, but rather take 3rd party software (mostly from RAA & Rubyforge)
+and repackage it according to our standards (this includes adding
+documentation, unit tests, general fixing, etc, which will be contributed to
+the upstream author when applicable).
+
+>
+> All packages shall be
+> - Consistent with our documented standards.
+
+Some notes on things I'd like from this, in time:
+        - Install using the same commands
+        - Install their files in the same locations in the directory hierarchy
+        - Consistent source layout
+        - Consistent naming
+        - Follow a standard system for documentation (possibly rdoc + ri,
+          possibly installing documentation in a particular place, possibly
+          something else - we'll find out)
+        - A checklist for how a package shall be to be deemed consistent with
+          a particular version of the archive
+
+> - Documented.
+        - We should include at least a minimal set of documentation for all
+          packages we re-release.
+
+> - Stable enough for production use.
+
+        - We should be critical of when we start including packages, to
+          make sure that when a package is available from us, that means it is
+          ready for use by people doing production development.
+
+> - Kept available and with somewhere to send bugfixes for a reasonable cycle
+>   of production.
+
+        - We should keep making a package available after we have initially
+          released them.  This doesn't mean we can't stop supporting packages,
+          just that when we want to stop supporting a package, we need to
+          deprecate it, and keep light maintenance for it for a substantial
+          period (two years?)
+
+> - Versioned (if applicable).
+
+        - I believe the primary packaging object will be libraries; we can
+          package applications, but that's only necessary because they may
+          have dependencies.  And dependencies will always be on particular
+          library versions - thus, we need to do versioning of libraries.
+          I'll do a writeup of this for our documentation later.
+
+> - With an API we commit to over versions (if applicable).
+
+        - For libraries, versions are important.  With an API commitment, it
+          is possible for application developers (including other library
+          developers) to depend on the library and not get burned.
+
+> - Released after stringent release engineering standards.
+
+        - This basically says the same as all of the above combined - and
+          covers whatever else that becomes necessary as the state of the art
+          improves.
+
