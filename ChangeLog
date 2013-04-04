@@ -1,3 +1,15 @@
+2004-8-26 14:16 (+0200)  batsman  rev 791
+
+ * lib/rpa/helper.rb:
+    Helper::Installmodules#run: duh, prefix removal was attempted in the wrong
+    order.
+
+2004-8-26 14:11 (+0200)  batsman  rev 790
+
+ * install.rb, lib/rpa/helper.rb:
+    Helper::Installmodules#run: try to remove the prefix correctly to avoid
+    problems when the inst. prefix is a subdir of ruby's one.
+
 2004-8-24 15:57 (+0200)  batsman  rev 770
 
  * install.rb:

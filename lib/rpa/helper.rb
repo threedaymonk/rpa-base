@@ -471,7 +471,13 @@ class Installmodules < InstallStuffBase
     def run(installer)
         super
         sitelibdir = ::Config::CONFIG["sitelibdir"]
-        sitelibdir.gsub!(/^#{Regexp.escape(::Config::CONFIG["prefix"])}/, "")
+        prefs = ::Config::CONFIG["prefix"], @config["prefix"]
+        prefs = prefs.sort_by{|x| x.size }
+        # try the longest first
+        unless sitelibdir.gsub!(/^#{Regexp.escape(prefs[1])}/, "")
+            sitelibdir.gsub!(/^#{Regexp.escape(prefs[0])}/, "")
+        end
+
         do_copy(installer, sitelibdir)
     end
     
