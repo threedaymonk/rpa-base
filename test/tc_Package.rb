@@ -141,6 +141,14 @@ class TC_TarHeader < Test::Unit::TestCase
         assert_equal("", h.prefix)
         assert_equal("ustar", h.magic)
     end
+    
+    def test_new_from_stream_with_evil_name
+        header = tar_file_header("a \0" + "\0" * 97, "", 012345, 10)
+        h = nil
+        header = StringIO.new header
+        assert_nothing_raised{ h = TarHeader.new_from_stream header }
+        assert_equal("a ", h.name)
+    end
 end
 
 

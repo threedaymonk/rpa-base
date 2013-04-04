@@ -132,6 +132,7 @@ class LocalInstallation
         #TODO: file locking etc
         recover = File.join(@config["prefix"], @config["rpa-base"], "transactions")
         pending = YAML.load(file_class.read(recover)) rescue []
+        pending ||= []
         pending << packagestate_class.new(self, new_metadata, lightweight)
         @fileops.mkdir_p(File.dirname(recover), :mode => 0755)
         Transaction::atomic_write(recover, pending.to_yaml)
@@ -183,6 +184,7 @@ class LocalInstallation
         acquire_lock
         recover = File.join(@config["prefix"], @config["rpa-base"], "transactions")
         pending = YAML.load(file_class.read(recover)) rescue []
+        pending ||= []
         Transaction::atomic_write(recover, [].to_yaml)
         puts "Committed changes" if @config["verbose"] >= 4
         # we don't mind being interrupted now cause the rollback info would be
@@ -198,6 +200,7 @@ class LocalInstallation
         lock_acquired = false
         recover = File.join(@config["prefix"], @config["rpa-base"], "transactions")
         pending = YAML.load(File.read_b(recover)) rescue []
+        pending ||= []
         numpending = pending.size
         return if numpending == 0 # no need to lock, etc
         lock_acquired, bogus = true, acquire_lock
@@ -206,6 +209,7 @@ class LocalInstallation
         # have to reload after the lock to make sure it wasn't modified before
         recover = File.join(@config["prefix"], @config["rpa-base"], "transactions")
         pending = YAML.load(File.read_b(recover)) rescue []
+        pending ||= []
         numpending = pending.size
         rollbackdir = File.join(@config["prefix"], @config["rpa-base"],
                                 "rollback")

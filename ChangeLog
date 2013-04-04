@@ -1,3 +1,30 @@
+2004-8-24 15:57 (+0200)  batsman  rev 770
+
+ * install.rb:
+    Changed the messages from the bootstrap phase: specify when paths are
+    relative.
+
+2004-8-24 15:12 (+0200)  batsman  rev 769
+
+ * lib/rpa/package.rb:
+    Package::TarHeader#new_from_stream: don't remove trailing spaces from the
+    fields where they make sense.
+
+2004-8-24 14:53 (+0200)  batsman  rev 768
+
+ * install.rb, lib/rpa/localmetadata.rb, lib/rpa/package.rb, lib/rpa/base.rb,
+  lib/rpa/repositoryinfo.rb:
+    Keep in mind that YAML.load("") returns false and act accordingly. In practice
+    this means something like
+             pending = YAML.load(File.read_b(recover)) rescue []
+    +        pending ||= []
+
+2004-8-24 14:37 (+0200)  batsman  rev 767
+
+ * test/tc_Package.rb:
+    Showcase bug in Package::TarHeader.new_from_stream (silent modification of
+    filenames with trailing spaces).
+
 2004-8-22 21:40 (+0200)  batsman  rev 766
 
  * install.rb, lib/rpa/helper.rb:

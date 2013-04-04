@@ -26,8 +26,9 @@ EOF
     puts <<-EOF
     You can now modify the default paths used by RPA.
     EOF
-    labels = ["Prefix", "RPA base directory", "Module directory", 
-            "Extension directory"]
+    labels = ["Prefix", "RPA base directory, relative to $prefix\n", 
+            "Module directory, relative to $prefix\n", 
+            "Extension directory, relative to $prefix\n"]
     keys = %w[prefix rpa-base sitelibdir so-dir]
     defs = [RPA::Defaults::PREFIX, RPA::Defaults::RPA_BASE,
             RPA::Defaults::SITELIBDIR, RPA::Defaults::SO_DIR]
@@ -81,7 +82,7 @@ require 'rpa/install'
 require 'rbconfig'
 class Install_rpa_base < RPA::Install::Application
     name "rpa-base"
-    version "0.2.1-1"
+    version "0.2.1-3"
     classification Application.Admin
     build do
         skip_default Installrdoc

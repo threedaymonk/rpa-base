@@ -41,16 +41,16 @@ class TarHeader
 
     def self.new_from_stream(stream)
         data = stream.read(512)
-        fields = data.unpack( "A100" + # record name
+        fields = data.unpack( "Z100" + # record name
                              "A8A8A8" +        # mode, uid, gid
                              "A12A12" +        # size, mtime
-                             "A8A" +           # checksum, typeflag
-                             "A100" +          # linkname
+                             "A8a" +           # checksum, typeflag
+                             "Z100" +          # linkname
                              "A6A2" +          # magic, version
-                             "A32" +           # uname
-                             "A32" +           # gname
+                             "Z32" +           # uname
+                             "Z32" +           # gname
                              "A8A8" +          # devmajor, devminor
-                             "A155"            # prefix
+                             "Z155"            # prefix
                             )
         name = fields.shift
         mode = fields.shift.oct
@@ -449,6 +449,7 @@ class TarInput
             case entry.full_name 
             when "metadata"
                 @metadata = YAML.load(entry.read) rescue nil
+                @metadata ||= nil # convert false into nil
                 has_meta = true
                 break
             when "metadata.gz"
@@ -456,6 +457,7 @@ class TarInput
                     gzis = Zlib::GzipReader.new entry
                     # YAML wants an instance of IO 
                     @metadata = YAML.load(gzis) rescue nil
+                    @metadata ||= nil # convert false into nil
                     has_meta = true
                 ensure
                     gzis.close

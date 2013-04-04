@@ -26,6 +26,7 @@ class LocalMetadata
         end
         instfile = File.join(@dir, "installed")
         installed = YAML.load(file_class.read(instfile)) rescue []
+        installed ||= []
         installed << metadata["name"]
         installed = installed.uniq
         Transaction::atomic_write(instfile, installed.to_yaml)
@@ -36,8 +37,9 @@ class LocalMetadata
         infofile = File.join(@dir, "info", pkgname)
         instfile = File.join(@dir, "installed")
         installed = YAML.load(file_class.read(instfile)) rescue []
+        installed ||= []
         if installed.include? pkgname
-            YAML.load(file_class.read(infofile))
+            YAML.load(file_class.read(infofile)) || nil
         else
             nil
         end
@@ -47,6 +49,7 @@ class LocalMetadata
     def remove_metadata(pkgname)
         instfile = File.join(@dir, "installed")
         installed = YAML.load(file_class.read(instfile)) rescue []
+        installed ||= []
         installed.delete pkgname
         Transaction::atomic_write(instfile, installed.to_yaml)
         infofile = File.join(@dir, "info", pkgname)
@@ -55,7 +58,9 @@ class LocalMetadata
 
     def installed_ports
         instfile = File.join(@dir, "installed")
-        YAML.load(file_class.read(instfile)) rescue []
+        YAML.load(file_class.read(instfile)) || []
+    rescue
+        []
     end
 
     def installed_files
@@ -63,6 +68,7 @@ class LocalMetadata
         infodir = File.join(@dir, "info")
         instfile = File.join(@dir, "installed")
         installed = YAML.load(file_class.read(instfile)) rescue []
+        installed ||= []
         files = {}
         installed.map{|x| File.join(infodir, x)}.each do |fname|
             pkgfiles = YAML.load(file_class.read(fname))

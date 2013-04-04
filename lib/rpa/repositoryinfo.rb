@@ -58,7 +58,7 @@ class RepositoryInfo
             puts "Getting port info from #{src}." if verbose >= 2
             begin
                 RPA.fetch_file(@config, src) do |is|
-                     newinfo = newinfo + YAML.load(is.read)
+                     newinfo = newinfo + (YAML.load(is.read) || [])
                 end
                 # FIXME: what about repeated ports, etc?
             rescue Exception => e
